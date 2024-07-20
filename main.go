@@ -40,12 +40,22 @@ func main() {
 
 	fmt.Println("successfully connected to database....")
 
-	// User Creation
-	userId, err := CreateUser("aadhil", "strongpassword2")
+	// User Creation *********************************************************************************
+	// Try with UNIQUE usernames..
+	userId, err := CreateUser("anandhu123@gmail.com", "strongpassword3")
 	if err != nil {
 		log.Printf("user creation failed due to: %s", err)
+	} else {
+		fmt.Printf("User created with ID: %d", userId)
 	}
-	fmt.Printf("User created with ID:%d", userId)
+
+	// Create Author *********************************************************************************
+	authorId, err := CreateAuthor("author1111")
+	if err != nil {
+		log.Printf("author creation failed due to: %s", err)
+	} else {
+		fmt.Printf("Author created with ID: %d", authorId)
+	}
 }
 
 func CreateUser(username, password string) (uint16, error) {
@@ -63,7 +73,7 @@ func CreateUser(username, password string) (uint16, error) {
 			VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`
 
 	if err := Db.QueryRow(query, username, hashedPassword, salt, time.Now(), time.Now(), false).Scan(&userId); err != nil {
-		return 0, fmt.Errorf("error while executing query:%v ", err)
+		return 0, err
 	}
 
 	return userId, nil
@@ -87,4 +97,17 @@ func HashPassword(password, salt string) string {
 	hashBytes := hash.Sum(nil)
 	hashedPass := hex.EncodeToString(hashBytes)
 	return hashedPass
+}
+
+func CreateAuthor(name string) (uint16, error) {
+	var authorId uint16
+
+	query := `INSERT INTO authors(name,created_at,updated_at,status)
+			VALUES ($1,$2,$3,$4)
+			RETURNING id`
+
+	if err := Db.QueryRow(query, name, time.Now(), time.Now(), true).Scan(&authorId); err != nil {
+		return 0, err
+	}
+	return authorId, nil
 }
