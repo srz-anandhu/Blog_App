@@ -7,7 +7,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log"
-	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -20,21 +19,22 @@ const (
 	dbname   = "blogdatabase"
 )
 
-var Db *sql.DB
+var db *sql.DB
 var err error
 
 func main() {
+
 	connectionString := fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s sslmode = disable", user, password, host, port, dbname)
 
-	Db, err = sql.Open("postgres", connectionString)
+	db, err = sql.Open("postgres", connectionString)
 	// DSN parse error or initialization error
 	if err != nil {
 		log.Fatal(err)
 	}
 	// close db connection before main function exit
-	defer Db.Close()
+	defer db.Close()
 	// connection checking
-	if err := Db.Ping(); err != nil {
+	if err := db.Ping(); err != nil {
 		log.Fatal(err)
 	}
 
@@ -42,41 +42,42 @@ func main() {
 
 	// User Creation *********************************************************************************
 	// Try with UNIQUE usernames..
-	userId, err := CreateUser("anandhu123@gmail.com", "strongpassword3")
+	err := CreateUser("user1018@gmail.com", "strongpassword3")
 	if err != nil {
 		log.Printf("user creation failed due to: %s", err)
 	} else {
-		fmt.Printf("User created with ID: %d", userId)
+		fmt.Println("User created successfully")
 	}
 
 	// Create Author *********************************************************************************
-	authorId, err := CreateAuthor("author1111")
+	err = CreateAuthor("author2227")
 	if err != nil {
 		log.Printf("author creation failed due to: %s", err)
 	} else {
-		fmt.Printf("Author created with ID: %d", authorId)
+		fmt.Println("Author created successfully")
 	}
 }
+// ----------------------------------------------------------------------------------------------------------------------------
 
-func CreateUser(username, password string) (uint16, error) {
+func CreateUser(username, password string) error {
 	// Generate salt
 	salt, err := GenerateSalt(10)
 	if err != nil {
-		log.Printf("error generating salt: %v", err)
+		return fmt.Errorf("error generating salt: %v", err)
 	}
 
 	// Password Hashing
 	hashedPassword := HashPassword(password, salt)
 
-	var userId uint16
-	query := `INSERT INTO users(username,password,salt,created_at,updated_at,is_deleted)
-			VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`
+	query := `INSERT INTO users(username,password,salt)
+			  VALUES ($1,$2,$3)`
 
-	if err := Db.QueryRow(query, username, hashedPassword, salt, time.Now(), time.Now(), false).Scan(&userId); err != nil {
-		return 0, err
+	_, err = db.Exec(query, username, hashedPassword, salt)
+	if err != nil {
+		return fmt.Errorf("execution error due to : %s", err)
 	}
 
-	return userId, nil
+	return nil
 }
 
 // Generate a random salt of the given length
@@ -99,15 +100,17 @@ func HashPassword(password, salt string) string {
 	return hashedPass
 }
 
-func CreateAuthor(name string) (uint16, error) {
-	var authorId uint16
+func CreateAuthor(name string) error {
 
-	query := `INSERT INTO authors(name,created_at,updated_at,status)
-			VALUES ($1,$2,$3,$4)
-			RETURNING id`
+	query := `INSERT INTO authors(name)
+			  VALUES ($1)`
 
-	if err := Db.QueryRow(query, name, time.Now(), time.Now(), true).Scan(&authorId); err != nil {
-		return 0, err
+	// if err := db.QueryRow(query, name, time.Now(), time.Now(), true).Scan(&authorId); err != nil {
+	// 	return 0, err
+	// }
+	_, err = db.Exec(query, name)
+	if err != nil {
+		return fmt.Errorf("execution error due to: %s ", err)
 	}
-	return authorId, nil
+	return nil
 }
