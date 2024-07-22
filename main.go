@@ -42,7 +42,7 @@ func main() {
 
 	// User Creation *********************************************************************************
 	// Try with UNIQUE usernames..
-	err := CreateUser("user1018@gmail.com", "strongpassword3")
+	err := createUser("user1018@gmail.com", "strongpassword3")
 	if err != nil {
 		log.Printf("user creation failed due to: %s", err)
 	} else {
@@ -50,7 +50,7 @@ func main() {
 	}
 
 	// Create Author *********************************************************************************
-	err = CreateAuthor("author2227")
+	err = createAuthor("author2227")
 	if err != nil {
 		log.Printf("author creation failed due to: %s", err)
 	} else {
@@ -59,15 +59,15 @@ func main() {
 }
 // ----------------------------------------------------------------------------------------------------------------------------
 
-func CreateUser(username, password string) error {
+func createUser(username, password string) error {
 	// Generate salt
-	salt, err := GenerateSalt(10)
+	salt, err := generateSalt(10)
 	if err != nil {
 		return fmt.Errorf("error generating salt: %v", err)
 	}
 
 	// Password Hashing
-	hashedPassword := HashPassword(password, salt)
+	hashedPassword := hashPassword(password, salt)
 
 	query := `INSERT INTO users(username,password,salt)
 			  VALUES ($1,$2,$3)`
@@ -81,7 +81,7 @@ func CreateUser(username, password string) error {
 }
 
 // Generate a random salt of the given length
-func GenerateSalt(length uint8) (string, error) {
+func generateSalt(length uint8) (string, error) {
 	bytes := make([]byte, length)
 	_, err := rand.Read(bytes)
 	if err != nil {
@@ -92,7 +92,7 @@ func GenerateSalt(length uint8) (string, error) {
 }
 
 // Hashes the password with given salt (SHA-256)
-func HashPassword(password, salt string) string {
+func hashPassword(password, salt string) string {
 	hash := sha256.New()
 	hash.Write([]byte(password + salt))
 	hashBytes := hash.Sum(nil)
@@ -100,7 +100,7 @@ func HashPassword(password, salt string) string {
 	return hashedPass
 }
 
-func CreateAuthor(name string) error {
+func createAuthor(name string) error {
 
 	query := `INSERT INTO authors(name)
 			  VALUES ($1)`
