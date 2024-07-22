@@ -58,8 +58,8 @@ func main() {
 	// }
 
 	// create Blog ************************************************************************************
-	// title,authorId,content,status=(1,2,3:=drafted,published,deleted),userId
-	err = createBlog("blog2", 3, "This is blog2 content",1,3)
+	// title,content,authrorId,status=(1,2,3:=drafted,published,deleted),userId
+	err = createBlog("blog3", "This is content for blog3", 4, 2, 5)
 	if err != nil {
 		log.Printf("blog creation failed due to : %s", err)
 	} else {
@@ -126,11 +126,11 @@ func createAuthor(name string) error {
 	return nil
 }
 
-func createBlog(title string, authorId uint16, content string,status int,userId int) error {
-	query := `INSERT INTO blogs(title,author_id,content,status,created_by)
+func createBlog(title, content string, authorId, status, userId uint16) error {
+	query := `INSERT INTO blogs(title,content,author_id,status,created_by)
 			 VALUES ($1,$2,$3,$4,$5)`
 
-	_, err = db.Exec(query, title, authorId, content,status,userId)
+	_, err = db.Exec(query, title, content, authorId, status, userId)
 	if err != nil {
 		return fmt.Errorf("query execution failed due to : %s", err)
 	}
