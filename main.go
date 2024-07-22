@@ -42,21 +42,32 @@ func main() {
 
 	// User Creation *********************************************************************************
 	// Try with UNIQUE usernames..
-	err := createUser("user1018@gmail.com", "strongpassword3")
-	if err != nil {
-		log.Printf("user creation failed due to: %s", err)
-	} else {
-		fmt.Println("User created successfully")
-	}
+	// err := createUser("user1018@gmail.com", "strongpassword3")
+	// if err != nil {
+	// 	log.Printf("user creation failed due to: %s", err)
+	// } else {
+	// 	fmt.Println("User created successfully")
+	// }
 
 	// Create Author *********************************************************************************
-	err = createAuthor("author2227")
+	// err = createAuthor("author2227")
+	// if err != nil {
+	// 	log.Printf("author creation failed due to: %s", err)
+	// } else {
+	// 	fmt.Println("Author created successfully")
+	// }
+
+	// create Blog ************************************************************************************
+	// title,authorId,content,status=(1,2,3:=drafted,published,deleted),userId
+	err = createBlog("blog2", 3, "This is blog2 content",1,3)
 	if err != nil {
-		log.Printf("author creation failed due to: %s", err)
+		log.Printf("blog creation failed due to : %s", err)
 	} else {
-		fmt.Println("Author created successfully")
+		log.Println("blog created successfully")
 	}
+
 }
+
 // ----------------------------------------------------------------------------------------------------------------------------
 
 func createUser(username, password string) error {
@@ -111,6 +122,17 @@ func createAuthor(name string) error {
 	_, err = db.Exec(query, name)
 	if err != nil {
 		return fmt.Errorf("execution error due to: %s ", err)
+	}
+	return nil
+}
+
+func createBlog(title string, authorId uint16, content string,status int,userId int) error {
+	query := `INSERT INTO blogs(title,author_id,content,status,created_by)
+			 VALUES ($1,$2,$3,$4,$5)`
+
+	_, err = db.Exec(query, title, authorId, content,status,userId)
+	if err != nil {
+		return fmt.Errorf("query execution failed due to : %s", err)
 	}
 	return nil
 }
