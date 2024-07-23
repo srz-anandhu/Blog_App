@@ -60,7 +60,7 @@ func main() {
 
 	// create Blog ************************************************************************************
 	// title,content,authrorId,status=(1,2,3:=drafted,published,deleted),userId
-	// err = createBlog("blog4", "This is content for blog4", 3, 2, 5)
+	// err = createBlog("blog10", "This is content for blog10", 3, 2, 20)
 	// if err != nil {
 	// 	log.Printf("blog creation failed due to : %s", err)
 	// } else {
@@ -69,7 +69,7 @@ func main() {
 
 	// delete Blog ************************************************************************************
 	// blogid,userid
-	// err = deleteBlog(4, 5)
+	// err = deleteBlog(3, 12)
 	// if err != nil {
 	// 	log.Printf("blog deletion failed due to : %s", err)
 	// } else {
@@ -78,12 +78,21 @@ func main() {
 
 	// read Blog *************************************************************************************
 	// title,content,authorId
-	title, content, authorId, created_at, updated_at, err := readBlog(6)
-	if err != nil {
-		log.Printf("can't get blog due to : %s", err)
-	} else {
-		fmt.Printf("Title: %s \n Content: %s \n AuthorId: %d\n Created At:%s\n Updated At: %s\n ", title, content, authorId, created_at, updated_at)
-	}
+	// title, content, authorId, created_at, updated_at, err := readBlog(6)
+	// if err != nil {
+	// 	log.Printf("can't get blog due to : %s", err)
+	// } else {
+	// 	fmt.Printf("Title: %s \n Content: %s \n AuthorId: %d\n Created At:%s\n Updated At: %s\n ", title, content, authorId, created_at, updated_at)
+	// }
+
+	// update Blog ***********************************************************************************
+	// title,content,blogId
+	// err = updateBlog("updated title", "this is updated content ", 4)
+	// if err != nil {
+	// 	log.Printf("blog updation failed due to : %s", err)
+	// } else {
+	// 	fmt.Println("blog updated successfully")
+	// }
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------
@@ -181,4 +190,27 @@ func readBlog(id uint16) (string, string, uint16, time.Time, time.Time, error) {
 		return "", "", 0, time.Time{}, time.Time{}, err
 	}
 	return title, content, authorId, created_at, updated_at, nil
+}
+
+func updateBlog(title, content string, id uint16) error {
+	query := `UPDATE blogs
+			  SET title=$1,content=$2,updated_at=NOW()
+			  WHERE id=$3
+			  AND status
+			  IN (1,2)
+			 `
+
+	result, err := db.Exec(query, title, content, id)
+	if err != nil {
+		return fmt.Errorf("query execution failed due to : %s", err)
+	}
+	isAffected,err:=result.RowsAffected()
+	if err!=nil{
+		return fmt.Errorf("no affected rows due to: %s",err)
+	}
+	if isAffected == 0{
+		return fmt.Errorf("no blogs with id=%d or status in 1 or 2",id)
+	}
+
+	return nil
 }
