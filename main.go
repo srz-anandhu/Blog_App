@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -59,11 +60,20 @@ func main() {
 
 	// create Blog ************************************************************************************
 	// title,content,authrorId,status=(1,2,3:=drafted,published,deleted),userId
-	err = createBlog("blog3", "This is content for blog3", 4, 2, 5)
+	// err = createBlog("blog3", "This is content for blog3", 4, 2, 5)
+	// if err != nil {
+	// 	log.Printf("blog creation failed due to : %s", err)
+	// } else {
+	// 	log.Println("blog created successfully")
+	// }
+
+	// delete Blog ************************************************************************************
+	// blogid,status=3,userid
+	err = deleteBlog(4,5)
 	if err != nil {
-		log.Printf("blog creation failed due to : %s", err)
+		log.Printf("blog deletion failed due to : %s", err)
 	} else {
-		log.Println("blog created successfully")
+		log.Println("blog deleted successfully")
 	}
 
 }
@@ -133,6 +143,19 @@ func createBlog(title, content string, authorId, status, userId uint16) error {
 	_, err = db.Exec(query, title, content, authorId, status, userId)
 	if err != nil {
 		return fmt.Errorf("query execution failed due to : %s", err)
+	}
+	return nil
+}
+
+// soft delete
+func deleteBlog(id,userId uint16) error {
+	query := `UPDATE blogs
+			 SET deleted_by=$1,deleted_at=$2,status=$3
+			 WHERE id=$4`
+
+	_, err = db.Exec(query, userId, time.Now().UTC(), 3, id)
+	if err != nil {
+		return fmt.Errorf("delete query execution failed due to: %s", err)
 	}
 	return nil
 }
