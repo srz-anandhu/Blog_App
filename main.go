@@ -68,14 +68,22 @@ func main() {
 	// }
 
 	// delete Blog ************************************************************************************
-	// blogid,status=3,userid
-	err = deleteBlog(4,5)
-	if err != nil {
-		log.Printf("blog deletion failed due to : %s", err)
-	} else {
-		log.Println("blog deleted successfully")
-	}
+	// blogid,userid
+	// err = deleteBlog(4, 5)
+	// if err != nil {
+	// 	log.Printf("blog deletion failed due to : %s", err)
+	// } else {
+	// 	log.Println("blog deleted successfully")
+	// }
 
+	// read Blog *************************************************************************************
+	// title,content,authorId
+	title, content, authorId, created_at, updated_at, err := readBlog(3)
+	if err != nil {
+		log.Printf("can't get blog due to : %s", err)
+	} else {
+		fmt.Printf("Title: %s \n Content: %s \n AuthorId: %d\n Created At:%s\n Updated At: %s\n ", title, content, authorId, created_at, updated_at)
+	}
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------
@@ -148,7 +156,7 @@ func createBlog(title, content string, authorId, status, userId uint16) error {
 }
 
 // soft delete
-func deleteBlog(id,userId uint16) error {
+func deleteBlog(id, userId uint16) error {
 	query := `UPDATE blogs
 			 SET deleted_by=$1,deleted_at=$2,status=$3
 			 WHERE id=$4`
@@ -158,4 +166,19 @@ func deleteBlog(id,userId uint16) error {
 		return fmt.Errorf("delete query execution failed due to: %s", err)
 	}
 	return nil
+}
+
+func readBlog(id uint16) (string, string, uint16, time.Time, time.Time, error) {
+	var title string
+	var content string
+	var authorId uint16
+	var created_at time.Time
+	var updated_at time.Time
+
+	query := `SELECT title,content,author_id,created_at,updated_at FROM blogs WHERE id=$1`
+
+	if err := db.QueryRow(query, id).Scan(&title, &content, &authorId, &created_at, &updated_at); err != nil {
+		return "", "", 0, time.Time{}, time.Time{}, err
+	}
+	return title, content, authorId, created_at, updated_at, nil
 }
