@@ -60,7 +60,7 @@ func main() {
 
 	// create Blog ************************************************************************************
 	// title,content,authrorId,status=(1,2,3:=drafted,published,deleted),userId
-	// err = createBlog("blog3", "This is content for blog3", 4, 2, 5)
+	// err = createBlog("blog4", "This is content for blog4", 3, 2, 5)
 	// if err != nil {
 	// 	log.Printf("blog creation failed due to : %s", err)
 	// } else {
@@ -78,7 +78,7 @@ func main() {
 
 	// read Blog *************************************************************************************
 	// title,content,authorId
-	title, content, authorId, created_at, updated_at, err := readBlog(3)
+	title, content, authorId, created_at, updated_at, err := readBlog(6)
 	if err != nil {
 		log.Printf("can't get blog due to : %s", err)
 	} else {
@@ -175,7 +175,7 @@ func readBlog(id uint16) (string, string, uint16, time.Time, time.Time, error) {
 	var created_at time.Time
 	var updated_at time.Time
 
-	query := `SELECT title,content,author_id,created_at,updated_at FROM blogs WHERE id=$1`
+	query := `SELECT title,content,author_id,created_at,updated_at FROM blogs WHERE id=$1 AND status = 2`
 
 	if err := db.QueryRow(query, id).Scan(&title, &content, &authorId, &created_at, &updated_at); err != nil {
 		return "", "", 0, time.Time{}, time.Time{}, err
