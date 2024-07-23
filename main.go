@@ -93,6 +93,16 @@ func main() {
 	// } else {
 	// 	fmt.Println("blog updated successfully")
 	// }
+
+	// read all Blogs *********************************************************************************
+	blogs, err := readAllBlogs()
+	if err != nil {
+		log.Printf("getting blogs failed due to : %s", err)
+	} else {
+		for _, blog := range blogs {
+			fmt.Printf("BlogID: %d \n Title: %s \n Content:%s \n AuthorId: %d \n Created At: %s \n Updated At: %s", blog.id, blog.title, blog.content, blog.authorId, blog.created_at, blog.updated_at)
+		}
+	}
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------
@@ -112,7 +122,7 @@ func createUser(username, password string) error {
 
 	_, err = db.Exec(query, username, hashedPassword, salt)
 	if err != nil {
-		return fmt.Errorf("execution error due to : %s", err)
+		return fmt.Errorf("execution error due to : %w", err)
 	}
 
 	return nil
@@ -148,7 +158,7 @@ func createAuthor(name string) error {
 	// }
 	_, err = db.Exec(query, name)
 	if err != nil {
-		return fmt.Errorf("execution error due to: %s ", err)
+		return fmt.Errorf("execution error due to: %w ", err)
 	}
 	return nil
 }
@@ -159,7 +169,7 @@ func createBlog(title, content string, authorId, status, userId uint16) error {
 
 	_, err = db.Exec(query, title, content, authorId, status, userId)
 	if err != nil {
-		return fmt.Errorf("query execution failed due to : %s", err)
+		return fmt.Errorf("query execution failed due to : %w", err)
 	}
 	return nil
 }
@@ -172,17 +182,19 @@ func deleteBlog(id, userId uint16) error {
 
 	_, err = db.Exec(query, userId, time.Now().UTC(), 3, id)
 	if err != nil {
-		return fmt.Errorf("delete query execution failed due to: %s", err)
+		return fmt.Errorf("delete query execution failed due to: %w", err)
 	}
 	return nil
 }
 
 func readBlog(id uint16) (string, string, uint16, time.Time, time.Time, error) {
-	var title string
-	var content string
-	var authorId uint16
-	var created_at time.Time
-	var updated_at time.Time
+	var (
+		title      string
+		content    string
+		authorId   uint16
+		created_at time.Time
+		updated_at time.Time
+	)
 
 	query := `SELECT title,content,author_id,created_at,updated_at FROM blogs WHERE id=$1 AND status = 2`
 
@@ -194,23 +206,58 @@ func readBlog(id uint16) (string, string, uint16, time.Time, time.Time, error) {
 
 func updateBlog(title, content string, id uint16) error {
 	query := `UPDATE blogs
-			  SET title=$1,content=$2,updated_at=NOW()
-			  WHERE id=$3
+			  SET title=$1,content=$2,updated_at=$3
+			  WHERE id=$4
 			  AND status
 			  IN (1,2)
 			 `
 
-	result, err := db.Exec(query, title, content, id)
+	result, err := db.Exec(query, title, content, time.Now().UTC(), id)
 	if err != nil {
-		return fmt.Errorf("query execution failed due to : %s", err)
+		return fmt.Errorf("query execution failed due to : %w", err)
 	}
-	isAffected,err:=result.RowsAffected()
-	if err!=nil{
-		return fmt.Errorf("no affected rows due to: %s",err)
+	isAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("no affected rows due to: %w", err)
 	}
-	if isAffected == 0{
-		return fmt.Errorf("no blogs with id=%d or status in 1 or 2",id)
+	if isAffected == 0 {
+		return fmt.Errorf("no blogs with id=%d or status in 1 or 2", id)
 	}
 
 	return nil
+}
+
+type blog struct {
+	id         uint16
+	title      string
+	authorId   uint16
+	content    string
+	created_at time.Time
+	updated_at time.Time
+}
+
+func readAllBlogs() ([]blog, error) {
+
+	query := `SELECT id,title,author_id,content,created_at,updated_at
+			 FROM blogs`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("query execution failed : %w", err)
+	}
+
+	defer rows.Close()
+
+	var blogs []blog
+	for rows.Next() {
+		var blog blog
+		if err := rows.Scan(&blog.id, &blog.title, &blog.authorId, &blog.content, &blog.created_at, &blog.updated_at); err != nil {
+			return nil, fmt.Errorf("row scan failed due to : %w", err)
+		}
+		blogs = append(blogs, blog)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("row iteration failed due to : %w", err)
+	}
+	return blogs, nil
 }
