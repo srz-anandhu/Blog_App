@@ -43,9 +43,4 @@ func (r *User)Create(db *sql.DB) (lastInsertedID int64, err error) {
 	// }
 	return lastInsertedID, nil
 }
-// func (r *User) Update(db *sql.DB) (err error){
-	
-// }
-// func (r *User) Delete(db *sql.DB) (err error){}
-// func (r *User) GetOne(db *sql.DB) (blog Blog, err error){}
-// func (r *User) GetAll(db *sql.DB) (blogs []Blog, err error){}
+

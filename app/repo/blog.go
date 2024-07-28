@@ -47,7 +47,7 @@ func (r *Blog) Update(db *sql.DB) (err error) {
 	IN (1,2)
    `
 
-	result, err := db.Exec(query, r.Title, r.Content, time.Now().UTC(),r.UpdatedBy, r.ID)
+	result, err := db.Exec(query, r.Title, r.Content, time.Now().UTC(), r.UpdatedBy, r.ID)
 	if err != nil {
 		return fmt.Errorf("query execution failed due to : %w", err)
 	}
@@ -59,5 +59,18 @@ func (r *Blog) Update(db *sql.DB) (err error) {
 		return fmt.Errorf("no blogs with id=%d or status in 1 or 2", r.ID)
 	}
 
+	return nil
+}
+
+// Soft Delete
+func (r *Blog) Delete(db *sql.DB) (err error) {
+	query := `UPDATE blogs
+	SET deleted_by=$1,deleted_at=$2,status=$3
+	WHERE id=$4`
+
+	_, err = db.Exec(query, r.DeletedBy, time.Now().UTC(), 3, r.ID)
+	if err != nil {
+		return fmt.Errorf("delete query execution failed due to: %w", err)
+	}
 	return nil
 }

@@ -40,7 +40,7 @@ func main() {
 
 	//var user repo.User     // creating an instance of user
 	//var author repo.Author // creating an instance of author
-	var blog repo.Blog     // creating an instance of blog
+	var blog repo.Blog // creating an instance of blog
 
 	// // User Creation
 	// user.UserName = "user708@gmail.com"
@@ -78,23 +78,24 @@ func main() {
 	// }
 
 	// Blog Updation
-	blog.Title = "Blog Title Updated to 3333"
-	blog.Content = "Content of Blog Updated to 3333"
-	blog.ID = 9
-	blog.UpdatedBy = 33
-	if err = blog.Update(db); err != nil {
-		log.Printf("blog updation failed due to : %s", err)
-	} else {
-		fmt.Printf("blog updated successfully with ID: %d", blog.ID)
-	}
-	// delete Blog ************************************************************************************
-	// blogid,userid
-	// err = deleteBlog(3, 12)
-	// if err != nil {
-	// 	log.Printf("blog deletion failed due to : %s", err)
+	// blog.Title = "Blog Title Updated to 3333"
+	// blog.Content = "Content of Blog Updated to 3333"
+	// blog.ID = 9
+	// blog.UpdatedBy = 33
+	// if err = blog.Update(db); err != nil {
+	// 	log.Printf("blog updation failed due to : %s", err)
 	// } else {
-	// 	log.Println("blog deleted successfully")
+	// 	fmt.Printf("blog updated successfully with ID: %d", blog.ID)
 	// }
+
+	// Delete Blog
+	blog.DeletedBy = 20
+	blog.ID = 6
+	if err := blog.Delete(db); err != nil {
+		log.Printf("blog deletion failed due to : %s", err)
+	} else {
+		log.Printf("blog deleted successfully with ID: %d", blog.ID)
+	}
 
 	// read Blog *************************************************************************************
 	// title,content,authorId
@@ -117,19 +118,6 @@ func main() {
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------
-
-// // soft delete
-// func deleteBlog(id, userId uint16) error {
-// 	query := `UPDATE blogs
-// 			 SET deleted_by=$1,deleted_at=$2,status=$3
-// 			 WHERE id=$4`
-
-// 	_, err = db.Exec(query, userId, time.Now().UTC(), 3, id)
-// 	if err != nil {
-// 		return fmt.Errorf("delete query execution failed due to: %w", err)
-// 	}
-// 	return nil
-// }
 
 // func readBlog(id uint16) (string, string, uint16, time.Time, time.Time, error) {
 // 	var (
