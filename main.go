@@ -39,24 +39,27 @@ func main() {
 	fmt.Println("successfully connected to database....")
 
 	// User Creation
-	var user repo.User // creating an instance of user
-	user.UserName = "user708@gmail.com"
-	user.Password = "strongPassword"
+	// var user repo.User // creating an instance of user
+	// user.UserName = "user708@gmail.com"
+	// user.Password = "strongPassword"
 
-	userID, err := user.Create(db)
-	if err != nil {
-		log.Printf("user creation failed due to : %s", err)
-	} else {
-		fmt.Printf("user created with ID: %d", userID)
-	}
-
-	// Create Author *********************************************************************************
-	// err = createAuthor("author2227")
+	// userID, err := user.Create(db)
 	// if err != nil {
-	// 	log.Printf("author creation failed due to: %s", err)
+	// 	log.Printf("user creation failed due to : %s", err)
 	// } else {
-	// 	fmt.Println("Author created successfully")
+	// 	fmt.Printf("user created with ID: %d", userID)
 	// }
+
+	// Author Creation
+	var author repo.Author
+	author.Name = "author1111"
+
+	authorID, err := author.Create(db)
+	if err != nil {
+		log.Printf("author creation failed due to : %s", err)
+	} else {
+		fmt.Printf("author created with ID: %d", authorID)
+	}
 
 	// create Blog ************************************************************************************
 	// title,content,authrorId,status=(1,2,3:=drafted,published,deleted),userId
@@ -106,18 +109,6 @@ func main() {
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------
-
-// func createAuthor(name string) error {
-
-// 	query := `INSERT INTO authors(name)
-// 			  VALUES ($1)`
-
-// 	_, err = db.Exec(query, name)
-// 	if err != nil {
-// 		return fmt.Errorf("execution error due to: %w ", err)
-// 	}
-// 	return nil
-// }
 
 // func createBlog(title, content string, authorId, status, userId uint16) error {
 // 	query := `INSERT INTO blogs(title,content,author_id,status,created_by)
