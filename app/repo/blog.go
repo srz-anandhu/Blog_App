@@ -20,7 +20,7 @@ type Blog struct {
 	Model
 }
 
-//var _ Repo = (*Repo)(nil)
+var _ Repo = (Repo)(nil)
 
 func (r *Blog) Create(db *sql.DB) (lastInsertedID int64, err error) {
 
@@ -76,10 +76,32 @@ func (r *Blog) Delete(db *sql.DB) (err error) {
 }
 
 func (r *Blog) GetOne(db *sql.DB) (blog Blog, err error) {
-	query := `SELECT title,content,author_id,created_at,updated_at FROM blogs WHERE id=$1 AND status = 2`
+	query := `SELECT id,title,content,author_id,created_at,updated_at FROM blogs WHERE id=$1 AND status = 2`
 
-	if err := db.QueryRow(query, r.ID).Scan(&blog.Title, &blog.Content, &blog.AuthorID, &blog.CreatedAt, &blog.UpdatedAt); err != nil {
+	if err := db.QueryRow(query, r.ID).Scan(&blog.ID, &blog.Title, &blog.Content, &blog.AuthorID, &blog.CreatedAt, &blog.UpdatedAt); err != nil {
 		return Blog{}, fmt.Errorf("query execution failed due to : %w", err)
 	}
 	return blog, nil
+}
+
+func (r *Blog) GetAll(db *sql.DB) (blogs []Blog, err error) {
+	query := `SELECT id,title,content,author_id,created_at,updated_at
+			 FROM blogs`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return []Blog{}, fmt.Errorf("query execution failed due to : %s", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var blog Blog
+		if err := rows.Scan(&blog.ID, &blog.Title, &blog.Content, &blog.AuthorID, &blog.CreatedAt, &blog.UpdatedAt); err != nil {
+			return []Blog{}, fmt.Errorf("row scan failed due to : %w", err)
+		}
+		blogs = append(blogs, blog)
+	}
+	if err := rows.Err(); err != nil {
+		return []Blog{}, fmt.Errorf("row iteration failed due to : %w", err)
+	}
+	return blogs, nil
 }
