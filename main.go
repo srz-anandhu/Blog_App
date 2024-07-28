@@ -38,8 +38,11 @@ func main() {
 
 	fmt.Println("successfully connected to database....")
 
-	// User Creation
-	// var user repo.User // creating an instance of user
+	//var user repo.User     // creating an instance of user
+	//var author repo.Author // creating an instance of author
+	var blog repo.Blog     // creating an instance of blog
+
+	// // User Creation
 	// user.UserName = "user708@gmail.com"
 	// user.Password = "strongPassword"
 
@@ -50,8 +53,7 @@ func main() {
 	// 	fmt.Printf("user created with ID: %d", userID)
 	// }
 
-	// Author Creation
-	// var author repo.Author
+	// //Author Creation
 	// author.Name = "author1111"
 
 	// authorID, err := author.Create(db)
@@ -61,21 +63,30 @@ func main() {
 	// 	fmt.Printf("author created with ID: %d", authorID)
 	// }
 
-	// Blog Creation
-	var blog repo.Blog
-	blog.Title = "Blog Title2222"
-	blog.Content = "Content of blog 2222"
-	blog.AuthorID = 8
-	blog.Status = 2 // Published
-	blog.CreatedBy = 20
+	//Blog Creation
+	// blog.Title = "Blog Title2222"
+	// blog.Content = "Content of blog 2222"
+	// blog.AuthorID = 8
+	// blog.Status = 2 // Published
+	// blog.CreatedBy = 20
 
-	blogID, err := blog.Create(db)
-	if err != nil {
-		log.Printf("blog creation failed due to : %s", err)
+	// blogID, err := blog.Create(db)
+	// if err != nil {
+	// 	log.Printf("blog creation failed due to : %s", err)
+	// } else {
+	// 	fmt.Printf("blog created successfully with ID : %d", blogID)
+	// }
+
+	// Blog Updation
+	blog.Title = "Blog Title Updated to 3333"
+	blog.Content = "Content of Blog Updated to 3333"
+	blog.ID = 9
+	blog.UpdatedBy = 33
+	if err = blog.Update(db); err != nil {
+		log.Printf("blog updation failed due to : %s", err)
 	} else {
-		fmt.Printf("blog created successfully with ID : %d", blogID)
+		fmt.Printf("blog updated successfully with ID: %d", blog.ID)
 	}
-
 	// delete Blog ************************************************************************************
 	// blogid,userid
 	// err = deleteBlog(3, 12)
@@ -92,15 +103,6 @@ func main() {
 	// 	log.Printf("can't get blog due to : %s", err)
 	// } else {
 	// 	fmt.Printf("Title: %s \n Content: %s \n AuthorId: %d\n Created At:%s\n Updated At: %s\n ", title, content, authorId, created_at, updated_at)
-	// }
-
-	// update Blog ***********************************************************************************
-	// title,content,blogId
-	// err = updateBlog("updated title", "this is updated content ", 4)
-	// if err != nil {
-	// 	log.Printf("blog updation failed due to : %s", err)
-	// } else {
-	// 	fmt.Println("blog updated successfully")
 	// }
 
 	// read all Blogs *********************************************************************************
@@ -144,38 +146,6 @@ func main() {
 // 		return "", "", 0, time.Time{}, time.Time{}, err
 // 	}
 // 	return title, content, authorId, created_at, updated_at, nil
-// }
-
-// func updateBlog(title, content string, id uint16) error {
-// 	query := `UPDATE blogs
-// 			  SET title=$1,content=$2,updated_at=$3
-// 			  WHERE id=$4
-// 			  AND status
-// 			  IN (1,2)
-// 			 `
-
-// 	result, err := db.Exec(query, title, content, time.Now().UTC(), id)
-// 	if err != nil {
-// 		return fmt.Errorf("query execution failed due to : %w", err)
-// 	}
-// 	isAffected, err := result.RowsAffected()
-// 	if err != nil {
-// 		return fmt.Errorf("no affected rows due to: %w", err)
-// 	}
-// 	if isAffected == 0 {
-// 		return fmt.Errorf("no blogs with id=%d or status in 1 or 2", id)
-// 	}
-
-// 	return nil
-// }
-
-// type blog struct {
-// 	id         uint16
-// 	title      string
-// 	authorId   uint16
-// 	content    string
-// 	created_at time.Time
-// 	updated_at time.Time
 // }
 
 // func readAllBlogs() ([]blog, error) {

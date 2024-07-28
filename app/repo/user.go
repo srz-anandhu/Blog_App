@@ -16,7 +16,6 @@ type User struct {
 	Model
 }
 
-// var _ Repo = (*Repo)(nil)
 
 func (r *User)Create(db *sql.DB) (lastInsertedID int64, err error) {
 	// Generate Salt

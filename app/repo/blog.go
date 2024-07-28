@@ -20,6 +20,8 @@ type Blog struct {
 	Model
 }
 
+//var _ Repo = (*Repo)(nil)
+
 func (r *Blog) Create(db *sql.DB) (lastInsertedID int64, err error) {
 
 	query := `INSERT INTO blogs(title,content,author_id,status,created_by)
@@ -35,4 +37,27 @@ func (r *Blog) Create(db *sql.DB) (lastInsertedID int64, err error) {
 		return 0, fmt.Errorf("couldn't get last inserted id dut to : %w", err)
 	}
 	return lastInsertedID, nil
+}
+
+func (r *Blog) Update(db *sql.DB) (err error) {
+	query := `UPDATE blogs
+	SET title=$1,content=$2,updated_at=$3,updated_by=$4
+	WHERE id=$5
+	AND status
+	IN (1,2)
+   `
+
+	result, err := db.Exec(query, r.Title, r.Content, time.Now().UTC(),r.UpdatedBy, r.ID)
+	if err != nil {
+		return fmt.Errorf("query execution failed due to : %w", err)
+	}
+	isAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("no affected rows due to: %w", err)
+	}
+	if isAffected == 0 {
+		return fmt.Errorf("no blogs with id=%d or status in 1 or 2", r.ID)
+	}
+
+	return nil
 }
