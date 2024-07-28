@@ -51,24 +51,30 @@ func main() {
 	// }
 
 	// Author Creation
-	var author repo.Author
-	author.Name = "author1111"
+	// var author repo.Author
+	// author.Name = "author1111"
 
-	authorID, err := author.Create(db)
-	if err != nil {
-		log.Printf("author creation failed due to : %s", err)
-	} else {
-		fmt.Printf("author created with ID: %d", authorID)
-	}
-
-	// create Blog ************************************************************************************
-	// title,content,authrorId,status=(1,2,3:=drafted,published,deleted),userId
-	// err = createBlog("blog10", "This is content for blog10", 3, 2, 20)
+	// authorID, err := author.Create(db)
 	// if err != nil {
-	// 	log.Printf("blog creation failed due to : %s", err)
+	// 	log.Printf("author creation failed due to : %s", err)
 	// } else {
-	// 	log.Println("blog created successfully")
+	// 	fmt.Printf("author created with ID: %d", authorID)
 	// }
+
+	// Blog Creation
+	var blog repo.Blog
+	blog.Title = "Blog Title2222"
+	blog.Content = "Content of blog 2222"
+	blog.AuthorID = 8
+	blog.Status = 2 // Published
+	blog.CreatedBy = 20
+
+	blogID, err := blog.Create(db)
+	if err != nil {
+		log.Printf("blog creation failed due to : %s", err)
+	} else {
+		fmt.Printf("blog created successfully with ID : %d", blogID)
+	}
 
 	// delete Blog ************************************************************************************
 	// blogid,userid
@@ -109,17 +115,6 @@ func main() {
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------
-
-// func createBlog(title, content string, authorId, status, userId uint16) error {
-// 	query := `INSERT INTO blogs(title,content,author_id,status,created_by)
-// 			 VALUES ($1,$2,$3,$4,$5)`
-
-// 	_, err = db.Exec(query, title, content, authorId, status, userId)
-// 	if err != nil {
-// 		return fmt.Errorf("query execution failed due to : %w", err)
-// 	}
-// 	return nil
-// }
 
 // // soft delete
 // func deleteBlog(id, userId uint16) error {
