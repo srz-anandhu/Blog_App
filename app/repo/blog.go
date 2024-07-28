@@ -74,3 +74,12 @@ func (r *Blog) Delete(db *sql.DB) (err error) {
 	}
 	return nil
 }
+
+func (r *Blog) GetOne(db *sql.DB) (blog Blog, err error) {
+	query := `SELECT title,content,author_id,created_at,updated_at FROM blogs WHERE id=$1 AND status = 2`
+
+	if err := db.QueryRow(query, r.ID).Scan(&blog.Title, &blog.Content, &blog.AuthorID, &blog.CreatedAt, &blog.UpdatedAt); err != nil {
+		return Blog{}, fmt.Errorf("query execution failed due to : %w", err)
+	}
+	return blog, nil
+}

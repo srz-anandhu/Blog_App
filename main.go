@@ -85,26 +85,26 @@ func main() {
 	// if err = blog.Update(db); err != nil {
 	// 	log.Printf("blog updation failed due to : %s", err)
 	// } else {
-	// 	fmt.Printf("blog updated successfully with ID: %d", blog.ID)
+	// 	fmt.Printf("blog with ID: %d updated successfully", blog.ID)
 	// }
 
 	// Delete Blog
-	blog.DeletedBy = 20
-	blog.ID = 6
-	if err := blog.Delete(db); err != nil {
-		log.Printf("blog deletion failed due to : %s", err)
-	} else {
-		log.Printf("blog deleted successfully with ID: %d", blog.ID)
-	}
-
-	// read Blog *************************************************************************************
-	// title,content,authorId
-	// title, content, authorId, created_at, updated_at, err := readBlog(6)
-	// if err != nil {
-	// 	log.Printf("can't get blog due to : %s", err)
+	// blog.DeletedBy = 20 // User.ID
+	// blog.ID = 6
+	// if err := blog.Delete(db); err != nil {
+	// 	log.Printf("blog deletion failed due to : %s", err)
 	// } else {
-	// 	fmt.Printf("Title: %s \n Content: %s \n AuthorId: %d\n Created At:%s\n Updated At: %s\n ", title, content, authorId, created_at, updated_at)
+	// 	log.Printf("blog with ID: %d deleted successfully", blog.ID)
 	// }
+
+	// Get Single Blog
+	blog.ID = 8
+	singleBlog,err:=blog.GetOne(db)
+	if err!=nil{
+		log.Printf("Can't get blog due to : %s",err)
+	}else{
+		fmt.Printf("Title: %s \n Content: %s \n Author: %d \n Created At: %s \n Updated At: %s", singleBlog.Title,singleBlog.Content,singleBlog.AuthorID,singleBlog.CreatedAt,singleBlog.UpdatedAt)
+	}
 
 	// read all Blogs *********************************************************************************
 	// blogs, err := readAllBlogs()
@@ -119,22 +119,6 @@ func main() {
 
 // ----------------------------------------------------------------------------------------------------------------------------
 
-// func readBlog(id uint16) (string, string, uint16, time.Time, time.Time, error) {
-// 	var (
-// 		title      string
-// 		content    string
-// 		authorId   uint16
-// 		created_at time.Time
-// 		updated_at time.Time
-// 	)
-
-// 	query := `SELECT title,content,author_id,created_at,updated_at FROM blogs WHERE id=$1 AND status = 2`
-
-// 	if err := db.QueryRow(query, id).Scan(&title, &content, &authorId, &created_at, &updated_at); err != nil {
-// 		return "", "", 0, time.Time{}, time.Time{}, err
-// 	}
-// 	return title, content, authorId, created_at, updated_at, nil
-// }
 
 // func readAllBlogs() ([]blog, error) {
 
