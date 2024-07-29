@@ -13,8 +13,6 @@ type Blog struct {
 	Content   string
 	Status    int    // 1 - Draft, 2 - Published, 3 - Deleted
 	AuthorID  uint16 // Author.ID
-	UpdatedBy uint16 // User.ID
-	CreatedBy uint16 // User.ID
 	DeletedBy uint16 // User.ID
 	DeletedAt time.Time
 	Model
@@ -32,15 +30,10 @@ var blog Blog
 func (r *Blog) Create(db *sql.DB) (lastInsertedID int64, err error) {
 
 	query := `INSERT INTO` + r.TableName() + `(title,content,author_id,status,created_by) 
-			 VALUES ($1,$2,$3,$4,$5)` // todo : queryraw
+			 VALUES ($1,$2,$3,$4,$5)
+			 RETURNING id` 
 
-	_, err = db.Exec(query, r.Title, r.Content, r.AuthorID, r.Status, r.CreatedBy)
-	if err != nil {
-		return 0, fmt.Errorf("query execution failed due to : %w", err)
-	}
-
-	query = `SELECT lastval()`
-	if err := db.QueryRow(query).Scan(&lastInsertedID); err != nil {
+	if err := db.QueryRow(query, r.Title, r.Content, r.AuthorID, r.Status, r.CreatedBy).Scan(&lastInsertedID); err != nil {
 		return 0, fmt.Errorf("couldn't get last inserted id dut to : %w", err)
 	}
 	return lastInsertedID, nil
