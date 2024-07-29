@@ -27,6 +27,8 @@ func (r *Blog) TableName() string {
 	return " blogs "
 }
 
+var blog Blog
+
 func (r *Blog) Create(db *sql.DB) (lastInsertedID int64, err error) {
 
 	query := `INSERT INTO` + r.TableName() + `(title,content,author_id,status,created_by) 
@@ -82,7 +84,7 @@ func (r *Blog) Delete(db *sql.DB) (err error) {
 
 func (r *Blog) GetOne(db *sql.DB) (result interface{}, err error) {
 	query := `SELECT id,title,content,author_id,created_at,updated_at FROM` + r.TableName() + `WHERE id=$1 AND status=2`
-	var blog Blog
+//	var blog Blog
 	if err := db.QueryRow(query, r.ID).Scan(&blog.ID, &blog.Title, &blog.Content, &blog.AuthorID, &blog.CreatedAt, &blog.UpdatedAt); err != nil {
 		return nil, fmt.Errorf("query execution failed due to : %w", err)
 	}
@@ -99,7 +101,7 @@ func (r *Blog) GetAll(db *sql.DB) (results []interface{}, err error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var blog Blog
+	//	var blog Blog
 		if err := rows.Scan(&blog.ID, &blog.Title, &blog.Content, &blog.AuthorID, &blog.CreatedAt, &blog.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("row scan failed due to : %w", err)
 		}

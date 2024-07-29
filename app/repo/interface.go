@@ -8,5 +8,5 @@ type Repo interface {
 	Delete(db *sql.DB) (err error)
 	GetOne(db *sql.DB) (result interface{}, err error)
 	GetAll(db *sql.DB) (results []interface{}, err error)
-	TableName() string
+	TableName() string // Function for reuse table name
 }

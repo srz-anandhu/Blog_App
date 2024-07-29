@@ -17,11 +17,13 @@ type User struct {
 	Model
 }
 
-//var _ Repo = (*User)(nil)
+var _ Repo = (*User)(nil)
 
 func (r *User) TableName() string {
 	return " users "
 }
+
+var user User
 
 func (r *User) Create(db *sql.DB) (lastInsertedID int64, err error) {
 	// Generate Salt
@@ -86,7 +88,7 @@ func (r *User) GetAll(db *sql.DB) (results []interface{}, err error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var user User
+		// var user User
 		if err := rows.Scan(&user.ID, &user.UserName, &user.Password, &user.CreatedAt, &user.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("row scan failed due to : %w", err)
 		}
@@ -96,4 +98,17 @@ func (r *User) GetAll(db *sql.DB) (results []interface{}, err error) {
 		return nil, fmt.Errorf("row iteration failed due to : %w", err)
 	}
 	return results, nil
+}
+
+func (r *User) GetOne(db *sql.DB) (result interface{}, err error) {
+	query := `SELECT id,username,password,created_at,updated_at
+			  FROM` + r.TableName() +
+			 `WHERE id=$1
+			  AND 
+			  is_deleted=false`
+	// var user User
+	if err := db.QueryRow(query, r.ID).Scan(&user.ID, &user.UserName, &user.Password, &user.CreatedAt, &user.UpdatedAt); err != nil {
+		return nil, fmt.Errorf("query execution failed due to : %w", err)
+	}
+	return user, nil
 }

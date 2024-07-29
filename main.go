@@ -2,7 +2,7 @@ package main
 
 import (
 	// "blog/app/repo"
-	"blog/app/repo"
+
 	"database/sql"
 	"fmt"
 	"log"
@@ -39,7 +39,7 @@ func main() {
 
 	fmt.Println("successfully connected to database....")
 
-	 var user repo.User     // creating an instance of user
+	// var user repo.User     // creating an instance of user
 	// var author repo.Author // creating an instance of author
 	//var blog repo.Blog // creating an instance of blog
 
@@ -54,17 +54,32 @@ func main() {
 	// 	fmt.Printf("user created with ID: %d", userID)
 	// }
 
-	users,err:=user.GetAll(db)
-	if err!=nil{
-		log.Printf("can't get users due to : %s",err)
-	}
-	for _,user:=range users{
-		u, ok:= user.(repo.User)
-		if !ok{
-			log.Println("type assertion failed")
-		}
-		fmt.Printf("\n ID: %d \n UserName: %s \n Password: %s \n Created AT: %s \n Updated AT: %s", u.ID, u.UserName ,u.Password, u.CreatedAt, u.UpdatedAt)
-	}
+	//	Get all users
+	// users,err:=user.GetAll(db)
+	// if err!=nil{
+	// 	log.Printf("can't get users due to : %s",err)
+	// }else{
+	// for _,user:=range users{
+	// 	u, ok:= user.(repo.User)
+	// 	if !ok{
+	// 		log.Println("type assertion failed")
+	// 	}
+	// 	fmt.Printf("\n ID: %d \n UserName: %s \n Password: %s \n Created AT: %s \n Updated AT: %s", u.ID, u.UserName ,u.Password, u.CreatedAt, u.UpdatedAt)
+	// }
+
+	// Get one user
+	// user.ID = 20
+	// singleUser,err:=user.GetOne(db)
+	// if err!=nil{
+	// 	log.Printf("can't get user due to : %s",err)
+	// }else{
+	// 	// type assertion to convert singleUser to User
+	// 	u, ok:= singleUser.(repo.User)
+	// 	if !ok{
+	// 		log.Println("type assertion failed")
+	// 	}
+	// 	fmt.Printf("\n ID: %d \n UserName: %s \n Password: %s \n Created AT: %s \n Updated AT: %s",u.ID, u.UserName, u.Password, u.CreatedAt, u.UpdatedAt)
+	// }
 
 	//Author Creation
 	// author.Name = "author1111"
@@ -129,7 +144,7 @@ func main() {
 	// if err != nil {
 	// 	log.Printf("can't get blogs due to : %s", err)
 	// }else{
-		
+
 	// 	for _, blog := range blogs {
 	// 		// Type assertion to convert blogs to Blog
 	// 		b, ok:= blog.(repo.Blog)
