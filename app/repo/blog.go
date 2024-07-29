@@ -20,7 +20,7 @@ type Blog struct {
 	Model
 }
 
-var _ Repo = (Repo)(nil)
+//var _ Repo = (*Repo)(nil)
 
 func (r *Blog) Create(db *sql.DB) (lastInsertedID int64, err error) {
 
