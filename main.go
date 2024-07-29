@@ -40,7 +40,7 @@ func main() {
 	fmt.Println("successfully connected to database....")
 
 	// var user repo.User     // creating an instance of user
-	// var author repo.Author // creating an instance of author
+	//var author repo.Author // creating an instance of author
 	//var blog repo.Blog // creating an instance of blog
 
 	// User Creation
@@ -89,6 +89,15 @@ func main() {
 	// 	log.Printf("author creation failed due to : %s", err)
 	// } else {
 	// 	fmt.Printf("author created with ID: %d", authorID)
+	// }
+
+	// Author Updation
+	// author.ID=7
+	// author.Name = "anandhu"
+	// if err:=author.Update(db);err!=nil{
+	// 	log.Printf("cant't update author due to : %s",err)
+	// }else{
+	// 	fmt.Printf("updated author with ID: %d",author.ID)
 	// }
 
 	//Blog Creation
