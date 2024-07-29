@@ -2,6 +2,7 @@ package main
 
 import (
 	// "blog/app/repo"
+	"blog/app/repo"
 	"database/sql"
 	"fmt"
 	"log"
@@ -40,7 +41,7 @@ func main() {
 
 	// var user repo.User     // creating an instance of user
 	// var author repo.Author // creating an instance of author
-	//var blog repo.Blog     // creating an instance of blog
+	var blog repo.Blog // creating an instance of blog
 
 	// User Creation
 	// user.UserName = "user7010@gmail.com"
@@ -103,16 +104,27 @@ func main() {
 	// if err != nil {
 	// 	log.Printf("Can't get blog due to : %s", err)
 	// } else {
-		
-	// 	fmt.Printf("\n ID: %d \n Title: %s \n Content: %s \n Author: %d \n Created At: %s \n Updated At: %s", )
+	// 	// Type assertion to convert singleBlog to Blog
+	// 	b,ok :=singleBlog.(repo.Blog)
+	// 	if !ok{
+	// 		log.Println("type assertion to blog failed ")
+	// 	}
+	// 	fmt.Printf("\n ID: %d \n Title: %s \n Content: %s \n Author: %d \n Created At: %s \n Updated At: %s",b.ID, b.Title, b.Content, b. AuthorID, b.CreatedAt, b.UpdatedAt)
 	// }
 
 	// // Get All Blogs
-	// blogs, err := blog.GetAll(db)
-	// if err != nil {
-	// 	log.Printf("can't get blogs due to : %s", err)
-	// }
-	// for _, blog := range blogs {
-	// 	fmt.Printf("\n ID: %d \n Title: %s \n Content: %s \n Author: %d \n Created At %s \n Updated At: %s", )
-	// }
+	blogs, err := blog.GetAll(db)
+	if err != nil {
+		log.Printf("can't get blogs due to : %s", err)
+	}else{
+		
+		for _, blog := range blogs {
+			// Type assertion to convert blogs to Blog
+			b, ok:= blog.(repo.Blog)
+			if !ok{
+				log.Println("type assertion failed")
+			}
+			fmt.Printf("\n ID: %d \n Title: %s \n Content: %s \n Author: %d \n Created At %s \n Updated At: %s",b.ID, b.Title, b.Content, b.AuthorID, b.CreatedAt, b.UpdatedAt)
+		}
+	}
 }

@@ -24,7 +24,7 @@ var _ Repo = (*Blog)(nil)
 
 // Function for reuse table name
 func (r *Blog) TableName() string {
-	return " blogs"
+	return " blogs "
 }
 
 func (r *Blog) Create(db *sql.DB) (lastInsertedID int64, err error) {
@@ -81,7 +81,7 @@ func (r *Blog) Delete(db *sql.DB) (err error) {
 }
 
 func (r *Blog) GetOne(db *sql.DB) (result interface{}, err error) {
-	query := `SELECT id,title,content,author_id,created_at,updated_at FROM` + r.TableName() + `WHERE id=$1 AND status = 2`
+	query := `SELECT id,title,content,author_id,created_at,updated_at FROM` + r.TableName() + `WHERE id=$1 AND status=2`
 	var blog Blog
 	if err := db.QueryRow(query, r.ID).Scan(&blog.ID, &blog.Title, &blog.Content, &blog.AuthorID, &blog.CreatedAt, &blog.UpdatedAt); err != nil {
 		return nil, fmt.Errorf("query execution failed due to : %w", err)
