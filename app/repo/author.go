@@ -8,12 +8,13 @@ import (
 
 // Author Model
 type Author struct {
-	ID   uint16
-	Name string
+	ID        uint16
+	Name      string
+	DeletedAt time.Time
 	Model
 }
 
-//var _ Repo = (*Author)(nil)
+var _ Repo = (*Author)(nil)
 
 func (r *Author) TableName() string {
 	return " authors "
@@ -35,7 +36,7 @@ func (r *Author) Create(db *sql.DB) (lastInsertedID int64, err error) {
 
 func (r *Author) Update(db *sql.DB) (err error) {
 	query := `UPDATE` + r.TableName() +
-		     `SET name=$1,updated_at=$2
+		`SET name=$1,updated_at=$2
 			  WHERE id=$3`
 
 	result, err := db.Exec(query, r.Name, time.Now().UTC(), r.ID)
@@ -50,4 +51,50 @@ func (r *Author) Update(db *sql.DB) (err error) {
 		return fmt.Errorf("no user with ID : %d ", r.ID)
 	}
 	return nil
+}
+
+func (r *Author) Delete(db *sql.DB) (err error) {
+	query := `UPDATE` + r.TableName() +
+		`SET deleted_at=$1
+		      WHERE id=$2`
+
+	_, err = db.Exec(query, time.Now().UTC(), r.ID)
+	if err != nil {
+		return fmt.Errorf("update query failed due to : %w", err)
+	}
+	return nil
+}
+
+func (r *Author) GetOne(db *sql.DB) (result interface{}, err error) {
+	query := `SELECT id,name,created_at,updated_at
+			  FROM` + r.TableName() +
+		`WHERE id=$1`
+
+	if err := db.QueryRow(query, r.ID).Scan(&author.ID, &author.Name, &author.CreatedAt, &author.UpdatedAt); err != nil {
+		return nil, fmt.Errorf("query failed due to : %w", err)
+	}
+	return author, nil
+}
+
+func (r *Author) GetAll(db *sql.DB) (results []interface{}, err error) {
+	query := `SELECT id,name,created_at,updated_at
+	         FROM ` + r.TableName() + ``
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("query execution failed due to : %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		// var author Author
+		if err := rows.Scan(&author.ID, &author.Name, &author.CreatedAt, &author.UpdatedAt); err != nil {
+			return nil, fmt.Errorf("row scan failed due to : %w", err)
+		}
+		results = append(results, author)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("row iteration failed due to : %w", err)
+	}
+	return results, nil
 }
