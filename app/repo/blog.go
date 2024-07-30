@@ -13,9 +13,8 @@ type Blog struct {
 	Content   string
 	Status    int    // 1 - Draft, 2 - Published, 3 - Deleted
 	AuthorID  uint16 // Author.ID
-	DeletedBy uint16 // User.ID
-	DeletedAt time.Time
 	Model
+	DeleteInfo
 }
 
 var _ Repo = (*Blog)(nil)

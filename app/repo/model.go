@@ -8,3 +8,8 @@ type Model struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type DeleteInfo struct {
+	DeletedBy *uint16 // User.ID
+	DeletedAt time.Time
+}

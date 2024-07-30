@@ -10,8 +10,8 @@ import (
 type Author struct {
 	ID        uint16
 	Name      string
-	DeletedAt time.Time
 	Model
+	DeleteInfo
 }
 
 var _ Repo = (*Author)(nil)
@@ -36,10 +36,10 @@ func (r *Author) Create(db *sql.DB) (lastInsertedID int64, err error) {
 
 func (r *Author) Update(db *sql.DB) (err error) {
 	query := `UPDATE` + r.TableName() +
-		`SET name=$1,updated_at=$2
-			  WHERE id=$3`
+		`SET name=$1,updated_at=$2,updated_by=$3
+			  WHERE id=$4`
 
-	result, err := db.Exec(query, r.Name, time.Now().UTC(), r.ID)
+	result, err := db.Exec(query, r.Name, time.Now().UTC(),r.UpdatedBy, r.ID)
 	if err != nil {
 		return fmt.Errorf("update query failed due to : %w", err)
 	}
@@ -55,10 +55,10 @@ func (r *Author) Update(db *sql.DB) (err error) {
 
 func (r *Author) Delete(db *sql.DB) (err error) {
 	query := `UPDATE` + r.TableName() +
-		`SET deleted_at=$1
-		      WHERE id=$2`
+		`SET deleted_at=$1,deleted_by=$2
+		      WHERE id=$3`
 
-	_, err = db.Exec(query, time.Now().UTC(), r.ID)
+	_, err = db.Exec(query, time.Now().UTC(),r.DeletedBy, r.ID)
 	if err != nil {
 		return fmt.Errorf("update query failed due to : %w", err)
 	}

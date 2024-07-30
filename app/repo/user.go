@@ -15,6 +15,7 @@ type User struct {
 	Salt      string
 	IsDeleted bool
 	Model
+	DeleteInfo
 }
 
 var _ Repo = (*User)(nil)
@@ -47,10 +48,10 @@ func (r *User) Create(db *sql.DB) (lastInsertedID int64, err error) {
 
 func (r *User) Update(db *sql.DB) (err error) {
 	query := `UPDATE` + r.TableName() +
-		`SET username=$1,password=$2,updated_at=$3
-			 WHERE id=$4`
+		     `SET username=$1,password=$2,updated_at=$3,updated_by=$4
+			  WHERE id=$5`
 
-	result, err := db.Exec(query, r.UserName, r.Password, time.Now().UTC(), r.ID)
+	result, err := db.Exec(query, r.UserName, r.Password, time.Now().UTC(), r.UpdatedBy, r.ID)
 	if err != nil {
 		return fmt.Errorf("query execution failed due to : %w", err)
 	}
@@ -68,10 +69,10 @@ func (r *User) Update(db *sql.DB) (err error) {
 // Soft Delete
 func (r *User) Delete(db *sql.DB) (err error) {
 	query := `UPDATE` + r.TableName() +
-		`SET is_deleted=$1
-			 WHERE id=$2`
+		     `SET is_deleted=$1,deleted_at=$2
+			  WHERE id=$3`
 
-	_, err = db.Exec(query, true, r.ID)
+	_, err = db.Exec(query, true,time.Now().UTC(), r.ID)
 	if err != nil {
 		return fmt.Errorf("query execution failed due to : %w", err)
 	}
