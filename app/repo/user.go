@@ -51,7 +51,7 @@ func (r *User) Update(db *sql.DB) (err error) {
 		     `SET username=$1,password=$2,updated_at=$3,updated_by=$4
 			  WHERE id=$5`
 
-	result, err := db.Exec(query, r.UserName, r.Password, time.Now().UTC(), r.UpdatedBy, r.ID)
+	result, err := db.Exec(query, r.UserName,salthash.HashPassword(r.Password,r.Salt), time.Now().UTC(), r.UpdatedBy, r.ID)
 	if err != nil {
 		return fmt.Errorf("query execution failed due to : %w", err)
 	}
