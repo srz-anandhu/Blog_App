@@ -10,6 +10,6 @@ type Model struct {
 }
 
 type DeleteInfo struct {
-	DeletedBy *uint16 // User.ID
+	DeletedBy uint16 // User.ID
 	DeletedAt time.Time
 }

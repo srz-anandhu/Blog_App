@@ -2,7 +2,6 @@ package main
 
 import (
 	// "blog/app/repo"
-
 	"database/sql"
 	"fmt"
 	"log"
@@ -39,7 +38,7 @@ func main() {
 
 	fmt.Println("successfully connected to database....")
 
-	// var user repo.User     // creating an instance of user
+	//var user repo.User // creating an instance of user
 	//var author repo.Author // creating an instance of author
 	//var blog repo.Blog // creating an instance of blog
 
@@ -53,7 +52,12 @@ func main() {
 	// } else {
 	// 	fmt.Printf("user created with ID: %d", userID)
 	// }
-
+	// user.ID = 10
+	// if err := user.Delete(db); err != nil {
+	// 	log.Printf("can't delete user with ID: %d", user.ID)
+	// } else {
+	// 	fmt.Println("deleted user successfully")
+	// }
 	//	Get all users
 	// users,err:=user.GetAll(db)
 	// if err!=nil{
