@@ -26,5 +26,6 @@ func apiRouter() chi.Router {
 		r.Get("/", authorController.GetAllAuthors)
 		r.Get("/{id}", authorController.GetAuthor)
 	})
+	
 	return r
 }
