@@ -21,6 +21,8 @@ func NewBlogController() BlogController {
 }
 
 func (c *blogControllerImpl) GetAllBlogs(w http.ResponseWriter, r *http.Request) {
+
+
 	w.Write([]byte("got all blogs"))
 }
 

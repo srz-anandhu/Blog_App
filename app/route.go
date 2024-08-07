@@ -8,6 +8,8 @@ import (
 
 func apiRouter() chi.Router {
 	blogController := controller.NewBlogController()
+	userController := controller.NewUserController()
+	authorController := controller.NewAuthorController()
 
 	r := chi.NewRouter()
 	r.Route("/blogs", func(r chi.Router) {
@@ -16,13 +18,13 @@ func apiRouter() chi.Router {
 	})
 
 	r.Route("/users", func(r chi.Router) {
-		r.Get("/", )
-		r.Get("/{id}", )
+		r.Get("/", userController.GetAllUsers)
+		r.Get("/{id}", userController.GetUser)
 	})
 
 	r.Route("/authors", func(r chi.Router) {
-		r.Get("/", )
-		r.Get("/{id}", )
+		r.Get("/", authorController.GetAllAuthors)
+		r.Get("/{id}", authorController.GetAuthor)
 	})
 	return r
 }
