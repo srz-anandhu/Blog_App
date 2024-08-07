@@ -10,3 +10,5 @@ type Repo interface {
 	GetAll(db *sql.DB) (results []interface{}, err error)
 	TableName() string // Function for reuse table name
 }
+
+// https://www.smartrabbitz.com/services/
