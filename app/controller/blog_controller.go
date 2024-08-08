@@ -2,6 +2,7 @@ package controller
 
 import (
 	"blog/app/dto"
+	"blog/pkg/utils"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -40,13 +41,15 @@ func (c *blogControllerImpl) GetAllBlogs(w http.ResponseWriter, r *http.Request)
 	jsonData, err := json.Marshal(blogs)
 	if err != nil {
 		log.Printf("error due to : %s ", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("failed"))
+		// w.WriteHeader(http.StatusInternalServerError)
+		// w.Write([]byte("failed"))
+		utils.Fail(w, http.StatusInternalServerError, []byte("failed"))
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(jsonData))
+	utils.Success(w, http.StatusOK, jsonData)
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// w.Write([]byte(jsonData))
 
 }
 
@@ -60,11 +63,13 @@ func (c *blogControllerImpl) GetBlog(w http.ResponseWriter, r *http.Request) {
 	jsonData, err := json.Marshal(blog)
 	if err != nil {
 		log.Printf("error due to : %s", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("failed"))
+		// w.WriteHeader(http.StatusInternalServerError)
+		// w.Write([]byte("failed"))
+		utils.Fail(w, http.StatusInternalServerError, []byte("failed"))
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(jsonData))
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// w.Write([]byte(jsonData))
+	utils.Success(w, http.StatusOK, jsonData)
 }
