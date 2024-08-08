@@ -2,6 +2,7 @@ package controller
 
 import (
 	"blog/app/dto"
+	"blog/pkg/utils"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -38,14 +39,15 @@ func (c *userControllerImpl) GetAllUsers(w http.ResponseWriter, r *http.Request)
 	jsonData, err := json.Marshal(users)
 	if err != nil {
 		log.Printf("error due to : %s ", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("failed"))
+		// w.WriteHeader(http.StatusInternalServerError)
+		// w.Write([]byte("failed"))
+		utils.Fail(w, http.StatusInternalServerError, []byte("failed"))
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(jsonData))
+	utils.Success(w, http.StatusOK, jsonData)
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// w.Write([]byte(jsonData))
 }
 
 func (c *userControllerImpl) GetUser(w http.ResponseWriter, r *http.Request) {
@@ -57,11 +59,13 @@ func (c *userControllerImpl) GetUser(w http.ResponseWriter, r *http.Request) {
 	jsonData, err := json.Marshal(user)
 	if err != nil {
 		log.Printf("error due to : %s ", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("failed"))
+		// w.WriteHeader(http.StatusInternalServerError)
+		// w.Write([]byte("failed"))
+		utils.Fail(w, http.StatusInternalServerError, []byte("failed"))
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(jsonData))
+	utils.Success(w, http.StatusOK, jsonData)
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+	// w.Write([]byte(jsonData))
 }

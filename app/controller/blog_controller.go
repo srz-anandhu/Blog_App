@@ -68,8 +68,8 @@ func (c *blogControllerImpl) GetBlog(w http.ResponseWriter, r *http.Request) {
 		utils.Fail(w, http.StatusInternalServerError, []byte("failed"))
 		return
 	}
+	utils.Success(w, http.StatusOK, jsonData)
 	// w.Header().Set("Content-Type", "application/json")
 	// w.WriteHeader(http.StatusOK)
 	// w.Write([]byte(jsonData))
-	utils.Success(w, http.StatusOK, jsonData)
 }
