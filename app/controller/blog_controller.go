@@ -22,8 +22,32 @@ func NewBlogController() BlogController {
 
 func (c *blogControllerImpl) GetAllBlogs(w http.ResponseWriter, r *http.Request) {
 
+	var blogs []dto.BlogResponse
 
-	w.Write([]byte("got all blogs"))
+	blog1 := dto.BlogResponse{
+		ID:      2,
+		Title:   "title2",
+		Content: "content2",
+	}
+	blog2 := dto.BlogResponse{
+		ID:      3,
+		Title:   "title3",
+		Content: "content3",
+	}
+
+	blogs = append(blogs, blog1, blog2)
+
+	jsonData, err := json.Marshal(blogs)
+	if err != nil {
+		log.Printf("error due to : %s ", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("failed"))
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(jsonData))
+
 }
 
 func (c *blogControllerImpl) GetBlog(w http.ResponseWriter, r *http.Request) {
