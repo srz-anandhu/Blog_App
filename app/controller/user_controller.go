@@ -39,15 +39,11 @@ func (c *userControllerImpl) GetAllUsers(w http.ResponseWriter, r *http.Request)
 	jsonData, err := json.Marshal(users)
 	if err != nil {
 		log.Printf("error due to : %s ", err)
-		// w.WriteHeader(http.StatusInternalServerError)
-		// w.Write([]byte("failed"))
-		api.Fail(w, http.StatusInternalServerError, []byte("failed"))
+
+		api.Fail(w, http.StatusInternalServerError, "failed", "couldn't get users")
 		return
 	}
 	api.Success(w, http.StatusOK, jsonData)
-	// w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusOK)
-	// w.Write([]byte(jsonData))
 }
 
 func (c *userControllerImpl) GetUser(w http.ResponseWriter, r *http.Request) {
@@ -59,13 +55,9 @@ func (c *userControllerImpl) GetUser(w http.ResponseWriter, r *http.Request) {
 	jsonData, err := json.Marshal(user)
 	if err != nil {
 		log.Printf("error due to : %s ", err)
-		// w.WriteHeader(http.StatusInternalServerError)
-		// w.Write([]byte("failed"))
-		api.Fail(w, http.StatusInternalServerError, []byte("failed"))
+
+		api.Fail(w, http.StatusInternalServerError, "failed", "couldn't get user")
 		return
 	}
 	api.Success(w, http.StatusOK, jsonData)
-	// w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusOK)
-	// w.Write([]byte(jsonData))
 }

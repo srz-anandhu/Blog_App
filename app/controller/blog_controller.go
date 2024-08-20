@@ -41,16 +41,11 @@ func (c *blogControllerImpl) GetAllBlogs(w http.ResponseWriter, r *http.Request)
 	jsonData, err := json.Marshal(blogs)
 	if err != nil {
 		log.Printf("error due to : %s ", err)
-		// w.WriteHeader(http.StatusInternalServerError)
-		// w.Write([]byte("failed"))
-		api.Fail(w, http.StatusInternalServerError, []byte("failed"))
+
+		api.Fail(w, http.StatusInternalServerError, "failed", "couldn't get blogs")
 		return
 	}
 	api.Success(w, http.StatusOK, jsonData)
-	// w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusOK)
-	// w.Write([]byte(jsonData))
-
 }
 
 func (c *blogControllerImpl) GetBlog(w http.ResponseWriter, r *http.Request) {
@@ -63,13 +58,9 @@ func (c *blogControllerImpl) GetBlog(w http.ResponseWriter, r *http.Request) {
 	jsonData, err := json.Marshal(blog)
 	if err != nil {
 		log.Printf("error due to : %s", err)
-		// w.WriteHeader(http.StatusInternalServerError)
-		// w.Write([]byte("failed"))
-		api.Fail(w, http.StatusInternalServerError, []byte("failed"))
+
+		api.Fail(w, http.StatusInternalServerError, "failed", "couldn't get blog")
 		return
 	}
 	api.Success(w, http.StatusOK, jsonData)
-	// w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusOK)
-	// w.Write([]byte(jsonData))
 }
