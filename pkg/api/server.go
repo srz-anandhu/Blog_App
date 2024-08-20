@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -11,5 +12,5 @@ func StartServer(port string, h http.Handler) {
 		//fmt.Println("port is ", port)
 	}
 	fmt.Printf("server started on port = %s", port)
-	http.ListenAndServe(port, h)
+	log.Fatal(http.ListenAndServe(port, h))
 }

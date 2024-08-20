@@ -1,8 +1,9 @@
-package utils
+package api
 
 import (
 	"net/http"
 )
+
 
 func Success(w http.ResponseWriter, status int, data []byte) {
 	w.Header().Set("Content-Type", "application/json")
