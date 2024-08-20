@@ -39,15 +39,11 @@ func (c *authorControllerImpl) GetAllAuthors(w http.ResponseWriter, r *http.Requ
 	jsonData, err := json.Marshal(authors)
 	if err != nil {
 		log.Printf("error due to : %s ", err)
-		// w.WriteHeader(http.StatusInternalServerError)
-		// w.Write([]byte("failed"))
-		api.Fail(w, http.StatusInternalServerError, []byte("failed"))
+
+		api.Fail(w, http.StatusInternalServerError, "failed", "couldn't get authors")
 		return
 	}
 	api.Success(w, http.StatusOK, jsonData)
-	// w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusOK)
-	// w.Write([]byte(jsonData))
 }
 
 func (c *authorControllerImpl) GetAuthor(w http.ResponseWriter, r *http.Request) {
@@ -59,13 +55,10 @@ func (c *authorControllerImpl) GetAuthor(w http.ResponseWriter, r *http.Request)
 	jsonData, err := json.Marshal(author)
 	if err != nil {
 		log.Printf("error due to : %s ", err)
-		// w.WriteHeader(http.StatusInternalServerError)
-		// w.Write([]byte("failed"))
-		api.Fail(w, http.StatusInternalServerError, []byte("failed"))
+
+		api.Fail(w, http.StatusInternalServerError, "failed", "couldn't get author")
 		return
 	}
 	api.Success(w, http.StatusOK, jsonData)
-	// w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusOK)
-	// w.Write([]byte(jsonData))
+
 }
