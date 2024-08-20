@@ -2,6 +2,7 @@ package controller
 
 import (
 	"blog/app/dto"
+	"blog/app/service"
 	"blog/pkg/api"
 	"encoding/json"
 	"log"
@@ -15,10 +16,14 @@ type AuthorController interface {
 
 var _ AuthorController = (*authorControllerImpl)(nil)
 
-type authorControllerImpl struct{}
+type authorControllerImpl struct{
+	authorService service.AuthorService
+}
 
-func NewAuthorController() AuthorController {
-	return &authorControllerImpl{}
+func NewAuthorController(authorService service.AuthorService) AuthorController {
+	return &authorControllerImpl{
+		authorService: authorService,
+	}
 }
 
 func (c *authorControllerImpl) GetAllAuthors(w http.ResponseWriter, r *http.Request) {
@@ -47,18 +52,20 @@ func (c *authorControllerImpl) GetAllAuthors(w http.ResponseWriter, r *http.Requ
 }
 
 func (c *authorControllerImpl) GetAuthor(w http.ResponseWriter, r *http.Request) {
-	author := dto.AuthorResponse{
-		ID:   1,
-		Name: "author bbbb",
-	}
+	// author := dto.AuthorResponse{
+	// 	ID:   1,
+	// 	Name: "author bbbb",
+	// }
 
-	jsonData, err := json.Marshal(author)
-	if err != nil {
-		log.Printf("error due to : %s ", err)
+	// jsonData, err := json.Marshal(author)
+	// if err != nil {
+	// 	log.Printf("error due to : %s ", err)
 
-		api.Fail(w, http.StatusInternalServerError, "failed", "couldn't get author")
-		return
-	}
-	api.Success(w, http.StatusOK, jsonData)
+	// 	api.Fail(w, http.StatusInternalServerError, "failed", "couldn't get author")
+	// 	return
+	// }
+	// api.Success(w, http.StatusOK, jsonData)
+
+	
 
 }

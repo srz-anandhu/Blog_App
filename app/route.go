@@ -2,14 +2,21 @@ package app
 
 import (
 	"blog/app/controller"
+	"blog/app/repo"
+	"blog/app/service"
+	"database/sql"
 
 	"github.com/go-chi/chi/v5"
 )
 
 func apiRouter() chi.Router {
+	var db *sql.DB
 	blogController := controller.NewBlogController()
 	userController := controller.NewUserController()
-	authorController := controller.NewAuthorController()
+
+	authorRepo := repo.NewAuthor()
+	authorService := service.NewAuthorService(authorRepo, db)
+	authorController := controller.NewAuthorController(authorService)
 
 	r := chi.NewRouter()
 	r.Route("/blogs", func(r chi.Router) {

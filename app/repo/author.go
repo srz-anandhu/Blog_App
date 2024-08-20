@@ -20,6 +20,10 @@ func (r *Author) TableName() string {
 	return " authors "
 }
 
+func NewAuthor()Repo{
+	return &Author{}
+}
+
 var author Author
 
 func (r *Author) Create(db *sql.DB) (lastInsertedID int64, err error) {
