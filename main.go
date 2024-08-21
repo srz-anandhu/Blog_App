@@ -2,32 +2,9 @@ package main
 
 import (
 	"blog/app"
-	"database/sql"
-	"fmt"
-	"log"
-		_ "github.com/lib/pq"
+
+	_ "github.com/lib/pq"
 )
-
-// import (
-
-// 	// "blog/app/repo"
-// 	//"blog/app/repo"
-// 	"database/sql"
-
-
-// )
-
-const (
-	user     = "postgres"
-	password = "password"
-	host     = "localhost"
-	port     = 5432
-	dbname   = "blogdatabase"
-)
-
-var db *sql.DB
-
-var err error
 
 func main() {
 	//******************************************************
@@ -105,22 +82,6 @@ func main() {
 	// })
 
 	//******************************************************
-
-	connectionString := fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s sslmode = disable", user, password, host, port, dbname)
-
-	db, err = sql.Open("postgres", connectionString)
-	// DSN parse error or initialization error
-	if err != nil {
-		log.Fatal(err)
-	}
-	// close db connection before main function exit
-	defer db.Close()
-	// connection checking
-	if err := db.Ping(); err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("successfully connected to database....")
 
 	//var user repo.User // creating an instance of user
 	//var author repo.Author // creating an instance of author

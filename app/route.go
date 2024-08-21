@@ -2,15 +2,21 @@ package app
 
 import (
 	"blog/app/controller"
+	"blog/app/db"
 	"blog/app/repo"
 	"blog/app/service"
-	"database/sql"
+	"log"
 
 	"github.com/go-chi/chi/v5"
 )
 
 func apiRouter() chi.Router {
-	var db *sql.DB
+	// DB initialization
+	db, err := db.InitDB()
+	if err != nil {
+		log.Printf("db connection error due to : %s", err)
+	}
+
 	blogController := controller.NewBlogController()
 	userController := controller.NewUserController()
 
@@ -33,6 +39,6 @@ func apiRouter() chi.Router {
 		r.Get("/", authorController.GetAllAuthors)
 		r.Get("/{id}", authorController.GetAuthor)
 	})
-	
+
 	return r
 }
