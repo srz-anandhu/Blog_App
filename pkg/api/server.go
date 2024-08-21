@@ -11,6 +11,6 @@ func StartServer(port string, h http.Handler) {
 		port = ":" + port
 		//fmt.Println("port is ", port)
 	}
-	fmt.Printf("server started on port = %s", port)
+	fmt.Printf("server started on port = %s\n", port)
 	log.Fatal(http.ListenAndServe(port, h))
 }

@@ -1,12 +1,13 @@
 package controller
 
 import (
-	"blog/app/dto"
 	"blog/app/service"
 	"blog/pkg/api"
-	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type AuthorController interface {
@@ -28,44 +29,46 @@ func NewAuthorController(authorService service.AuthorService) AuthorController {
 
 func (c *authorControllerImpl) GetAllAuthors(w http.ResponseWriter, r *http.Request) {
 
-	var authors []dto.AuthorResponse
+	// var authors []dto.AuthorResponse
 
-	author1 := dto.AuthorResponse{
-		ID:   2,
-		Name: "Author Name 8888",
-	}
-	author2 := dto.AuthorResponse{
-		ID:   3,
-		Name: "Author Name 77777",
-	}
-
-	authors = append(authors, author1, author2)
-
-	jsonData, err := json.Marshal(authors)
-	if err != nil {
-		log.Printf("error due to : %s ", err)
-
-		api.Fail(w, http.StatusInternalServerError, "failed", "couldn't get authors")
-		return
-	}
-	api.Success(w, http.StatusOK, jsonData)
-}
-
-func (c *authorControllerImpl) GetAuthor(w http.ResponseWriter, r *http.Request) {
-	// author := dto.AuthorResponse{
-	// 	ID:   1,
-	// 	Name: "author bbbb",
+	// author1 := dto.AuthorResponse{
+	// 	ID:   2,
+	// 	Name: "Author Name 8888",
+	// }
+	// author2 := dto.AuthorResponse{
+	// 	ID:   3,
+	// 	Name: "Author Name 77777",
 	// }
 
-	// jsonData, err := json.Marshal(author)
+	// authors = append(authors, author1, author2)
+
+	// jsonData, err := json.Marshal(authors)
 	// if err != nil {
 	// 	log.Printf("error due to : %s ", err)
 
-	// 	api.Fail(w, http.StatusInternalServerError, "failed", "couldn't get author")
+	// 	api.Fail(w, http.StatusInternalServerError, "failed", "couldn't get authors")
 	// 	return
 	// }
 	// api.Success(w, http.StatusOK, jsonData)
+}
 
-	
+func (c *authorControllerImpl) GetAuthor(w http.ResponseWriter, r *http.Request) {
 
+	// get author ID from request
+	strID := chi.URLParam(r, "id")
+
+	// converting string ID to int ID
+	intID, err := strconv.Atoi(strID)
+	if err != nil{
+		log.Printf("can't get author ID from request due to : %s", err)
+		api.Fail(w, http.StatusBadRequest, "failed", "can't found author ID")
+		return
+	}
+	authorResponse, err := c.authorService.GetAuthor(intID)
+	if err != nil{
+		log.Printf("can't get author due to : %s", err)
+		api.Fail(w, http.StatusBadRequest, "failed", "couldn't get author")
+		return
+	}
+	api.Success(w, http.StatusOK, authorResponse)
 }

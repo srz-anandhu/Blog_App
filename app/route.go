@@ -14,8 +14,8 @@ func apiRouter() chi.Router {
 	blogController := controller.NewBlogController()
 	userController := controller.NewUserController()
 
-	authorRepo := repo.NewAuthor()
-	authorService := service.NewAuthorService(authorRepo, db)
+	authorRepo := repo.NewAuthorRepo(db)
+	authorService := service.NewAuthorService(authorRepo)
 	authorController := controller.NewAuthorController(authorService)
 
 	r := chi.NewRouter()
