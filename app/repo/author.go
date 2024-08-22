@@ -27,11 +27,10 @@ func NewAuthorRepo(db *sql.DB) Repo {
 	}
 }
 
+// Function for reuse/modify table name
 func (r *AuthorRepoImpl) TableName() string {
 	return " authors "
 }
-
-var author Author
 
 func (r *AuthorRepoImpl) Create() (lastInsertedID int64, err error) {
 
@@ -39,6 +38,7 @@ func (r *AuthorRepoImpl) Create() (lastInsertedID int64, err error) {
 			  VALUES ($1)
 			  RETURNING id`
 
+	var author Author
 	if err := r.db.QueryRow(query, author.Name).Scan(&lastInsertedID); err != nil {
 		return 0, fmt.Errorf("couldn't get last inserted id due to: %w", err)
 	}
@@ -50,6 +50,7 @@ func (r *AuthorRepoImpl) Update(id int) (err error) {
 		`SET name=$1,updated_at=$2,updated_by=$3
 			  WHERE id=$4`
 
+	var author Author
 	result, err := r.db.Exec(query, author.Name, time.Now().UTC(), author.UpdatedBy, id)
 	if err != nil {
 		return fmt.Errorf("update query failed due to : %w", err)
@@ -69,6 +70,7 @@ func (r *AuthorRepoImpl) Delete(id int) (err error) {
 		`SET deleted_at=$1,deleted_by=$2
 		      WHERE id=$3`
 
+	var author Author
 	_, err = r.db.Exec(query, time.Now().UTC(), author.DeletedBy, id)
 	if err != nil {
 		return fmt.Errorf("update query failed due to : %w", err)
@@ -81,6 +83,7 @@ func (r *AuthorRepoImpl) GetOne(id int) (result interface{}, err error) {
 			  FROM` + r.TableName() +
 		`WHERE id=$1`
 
+	var author Author
 	if err := r.db.QueryRow(query, id).Scan(&author.ID, &author.Name, &author.CreatedAt, &author.UpdatedAt); err != nil {
 		return nil, fmt.Errorf("query failed due to : %w", err)
 	}
@@ -98,7 +101,7 @@ func (r *AuthorRepoImpl) GetAll() (results []interface{}, err error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		// var author Author
+		 var author Author
 		if err := rows.Scan(&author.ID, &author.Name, &author.CreatedAt, &author.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("row scan failed due to : %w", err)
 		}

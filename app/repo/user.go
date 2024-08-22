@@ -22,6 +22,7 @@ type UserRepoImpl struct {
 	db *sql.DB
 }
 
+// For checking implementation of Repo interface
 var _ Repo = (*UserRepoImpl)(nil)
 
 func NewUserRepo(db *sql.DB) Repo {
@@ -30,6 +31,7 @@ func NewUserRepo(db *sql.DB) Repo {
 	}
 }
 
+// Function for reuse/modify table name
 func (r *UserRepoImpl) TableName() string {
 	return " users "
 }

@@ -2,13 +2,23 @@ package main
 
 import (
 	"blog/app"
+	"blog/app/db"
+	"log"
 
 	_ "github.com/lib/pq"
 )
 
 func main() {
 	//******************************************************
-	app.Start()
+	
+	// DB initialization
+	db, err := db.InitDB()
+	if err != nil {
+		log.Printf("db connection error due to : %s", err)
+	}
+	app.Start(db)
+	// close db connection before main function exit
+	defer db.Close()
 
 	// log.Fatal(http.ListenAndServe(":8080", r))
 

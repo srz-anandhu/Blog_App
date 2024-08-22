@@ -2,20 +2,14 @@ package app
 
 import (
 	"blog/app/controller"
-	"blog/app/db"
 	"blog/app/repo"
 	"blog/app/service"
-	"log"
+	"database/sql"
 
 	"github.com/go-chi/chi/v5"
 )
 
-func apiRouter() chi.Router {
-	// DB initialization
-	db, err := db.InitDB()
-	if err != nil {
-		log.Printf("db connection error due to : %s", err)
-	}
+func apiRouter(db *sql.DB) chi.Router {
 
 	blogController := controller.NewBlogController()
 	userController := controller.NewUserController()

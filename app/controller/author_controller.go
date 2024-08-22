@@ -17,7 +17,7 @@ type AuthorController interface {
 
 var _ AuthorController = (*authorControllerImpl)(nil)
 
-type authorControllerImpl struct{
+type authorControllerImpl struct {
 	authorService service.AuthorService
 }
 
@@ -59,15 +59,17 @@ func (c *authorControllerImpl) GetAuthor(w http.ResponseWriter, r *http.Request)
 
 	// converting string ID to int ID
 	intID, err := strconv.Atoi(strID)
-	if err != nil{
+	//fmt.Printf("author id is :: %d ", intID)
+
+	if err != nil {
 		log.Printf("can't get author ID from request due to : %s", err)
-		api.Fail(w, http.StatusBadRequest, "failed", "can't found author ID")
+		api.Fail(w, http.StatusBadRequest, "failed", err.Error())
 		return
 	}
 	authorResponse, err := c.authorService.GetAuthor(intID)
-	if err != nil{
+	if err != nil {
 		log.Printf("can't get author due to : %s", err)
-		api.Fail(w, http.StatusBadRequest, "failed", "couldn't get author")
+		api.Fail(w, http.StatusBadRequest, "failed", err.Error())
 		return
 	}
 	api.Success(w, http.StatusOK, authorResponse)

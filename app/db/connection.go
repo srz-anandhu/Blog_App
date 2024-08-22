@@ -23,8 +23,6 @@ func InitDB() (*sql.DB, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// close db connection before main function exit
-	defer db.Close()
 	// connection checking
 	if err := db.Ping(); err != nil {
 		log.Fatal(err)

@@ -3,7 +3,6 @@ package service
 import (
 	"blog/app/dto"
 	"blog/app/repo"
-	"errors"
 )
 
 type AuthorService interface {
@@ -24,22 +23,25 @@ func NewAuthorService(authorRepo repo.Repo) AuthorService {
 }
 
 func (s *AuthorServiceImpl) GetAuthor(id int) (*dto.AuthorResponse, error) {
+	//fmt.Printf("author id from service : %d", id)
 	result, err := s.authorRepo.GetOne(id)
 	if err != nil {
 		return nil, err
 	}
 
-	a, ok := result.(*dto.AuthorResponse)
+	a, ok := result.(repo.Author)
 	if !ok {
-		return nil, errors.New("type assertion failed")
+		return nil, err
 	}
+
+	//fmt.Println("assertion before: ", a)
 	authRes := &dto.AuthorResponse{
 		ID:         a.ID,
 		Name:       a.Name,
-		Created_at: a.Created_at,
-		Updated_at: a.Updated_at,
+		Created_at: a.CreatedAt,
+		Updated_at: a.UpdatedAt,
 	}
-
+	//fmt.Println("::::::", authRes)
 	return authRes, nil
 
 }

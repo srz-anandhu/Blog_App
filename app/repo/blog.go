@@ -21,6 +21,7 @@ type BlogRepoImpl struct {
 	db *sql.DB
 }
 
+// For checking implementation of Repo interface
 var _ Repo = (*BlogRepoImpl)(nil)
 
 func NewBlogRepo(db *sql.DB) Repo {
