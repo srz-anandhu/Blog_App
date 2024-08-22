@@ -3,10 +3,14 @@ package service
 import (
 	"blog/app/dto"
 	"blog/app/repo"
+	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type AuthorService interface {
-	GetAuthor(id int) (*dto.AuthorResponse, error)
+	GetAuthor(r *http.Request) (*dto.AuthorResponse, error)
 	GetAuthors() (*[]dto.AuthorResponse, error)
 }
 
@@ -22,9 +26,17 @@ func NewAuthorService(authorRepo repo.Repo) AuthorService {
 	}
 }
 
-func (s *AuthorServiceImpl) GetAuthor(id int) (*dto.AuthorResponse, error) {
-	//fmt.Printf("author id from service : %d", id)
-	result, err := s.authorRepo.GetOne(id)
+func (s *AuthorServiceImpl) GetAuthor(r *http.Request) (*dto.AuthorResponse, error) {
+
+	// get author ID from request
+	strID := chi.URLParam(r, "id")
+	// converting string ID to int ID
+	intID, err := strconv.Atoi(strID)
+	//fmt.Printf("author id is :: %d ", intID)
+	if err != nil {
+		return nil, err
+	}
+	result, err := s.authorRepo.GetOne(intID)
 	if err != nil {
 		return nil, err
 	}
