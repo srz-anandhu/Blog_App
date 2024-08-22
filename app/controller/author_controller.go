@@ -12,6 +12,7 @@ type AuthorController interface {
 	GetAuthor(w http.ResponseWriter, r *http.Request)
 }
 
+// For checking implementation of AuthorController interface
 var _ AuthorController = (*authorControllerImpl)(nil)
 
 type authorControllerImpl struct {

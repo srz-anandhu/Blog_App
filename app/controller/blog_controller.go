@@ -13,6 +13,7 @@ type BlogController interface {
 	GetBlog(w http.ResponseWriter, r *http.Request)
 }
 
+// For checking implementation of BlogController interface
 var _ BlogController = (*blogControllerImpl)(nil)
 
 type blogControllerImpl struct{}

@@ -13,6 +13,7 @@ type UserController interface {
 	GetUser(w http.ResponseWriter, r *http.Request)
 }
 
+// For checking implementation of UserController interface
 var _ UserController = (*userControllerImpl)(nil)
 
 type userControllerImpl struct{}
