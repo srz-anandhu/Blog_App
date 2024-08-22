@@ -7,7 +7,7 @@ import (
 
 type AuthorService interface {
 	GetAuthor(id int) (*dto.AuthorResponse, error)
-	// GetAuthors()
+	GetAuthors() (*[]dto.AuthorResponse, error)
 }
 
 var _ AuthorService = (*AuthorServiceImpl)(nil)
@@ -35,13 +35,37 @@ func (s *AuthorServiceImpl) GetAuthor(id int) (*dto.AuthorResponse, error) {
 	}
 
 	//fmt.Println("assertion before: ", a)
-	authRes := &dto.AuthorResponse{
+	authorResp := &dto.AuthorResponse{
 		ID:         a.ID,
 		Name:       a.Name,
 		Created_at: a.CreatedAt,
 		Updated_at: a.UpdatedAt,
 	}
 	//fmt.Println("::::::", authRes)
-	return authRes, nil
+	return authorResp, nil
+
+}
+
+func (s *AuthorServiceImpl) GetAuthors() (*[]dto.AuthorResponse, error) {
+
+	results, err := s.authorRepo.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	var authors []dto.AuthorResponse
+	for _, val := range results {
+		a, ok := val.(repo.Author)
+		if !ok {
+			return nil, err
+		}
+		author := dto.AuthorResponse{
+			ID:         a.ID,
+			Name:       a.Name,
+			Created_at: a.CreatedAt,
+			Updated_at: a.UpdatedAt,
+		}
+		authors = append(authors, author)
+	}
+	return &authors, nil
 
 }

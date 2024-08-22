@@ -101,7 +101,8 @@ func (r *AuthorRepoImpl) GetAll() (results []interface{}, err error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		 var author Author
+		var author Author
+
 		if err := rows.Scan(&author.ID, &author.Name, &author.CreatedAt, &author.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("row scan failed due to : %w", err)
 		}

@@ -9,7 +9,7 @@ import (
 
 // User Model
 type User struct {
-	ID        uint16
+	ID        int
 	UserName  string
 	Password  string
 	Salt      string
