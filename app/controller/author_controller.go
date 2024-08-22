@@ -28,28 +28,12 @@ func NewAuthorController(authorService service.AuthorService) AuthorController {
 }
 
 func (c *authorControllerImpl) GetAllAuthors(w http.ResponseWriter, r *http.Request) {
-
-	// var authors []dto.AuthorResponse
-
-	// author1 := dto.AuthorResponse{
-	// 	ID:   2,
-	// 	Name: "Author Name 8888",
-	// }
-	// author2 := dto.AuthorResponse{
-	// 	ID:   3,
-	// 	Name: "Author Name 77777",
-	// }
-
-	// authors = append(authors, author1, author2)
-
-	// jsonData, err := json.Marshal(authors)
-	// if err != nil {
-	// 	log.Printf("error due to : %s ", err)
-
-	// 	api.Fail(w, http.StatusInternalServerError, "failed", "couldn't get authors")
-	// 	return
-	// }
-	// api.Success(w, http.StatusOK, jsonData)
+	authors, err := c.authorService.GetAuthors()
+	if err != nil {
+		api.Fail(w, http.StatusBadRequest, "failed", err.Error())
+		return
+	}
+	api.Success(w, http.StatusOK, authors)
 }
 
 func (c *authorControllerImpl) GetAuthor(w http.ResponseWriter, r *http.Request) {
