@@ -32,7 +32,7 @@ func (s *AuthorServiceImpl) GetAuthor(r *http.Request) (*dto.AuthorResponse, err
 	strID := chi.URLParam(r, "id")
 	// converting string ID to int ID
 	intID, err := strconv.Atoi(strID)
-	//fmt.Printf("author id is :: %d ", intID)
+
 	if err != nil {
 		return nil, err
 	}
@@ -46,15 +46,15 @@ func (s *AuthorServiceImpl) GetAuthor(r *http.Request) (*dto.AuthorResponse, err
 		return nil, err
 	}
 
-	//fmt.Println("assertion before: ", a)
-	authorResp := &dto.AuthorResponse{
-		ID:         a.ID,
-		Name:       a.Name,
-		Created_at: a.CreatedAt,
-		Updated_at: a.UpdatedAt,
-	}
-	//fmt.Println("::::::", authRes)
-	return authorResp, nil
+	var authorResp dto.AuthorResponse
+
+	authorResp.ID = a.ID
+	authorResp.Name = a.Name
+	authorResp.CreatedAt = a.CreatedAt
+	authorResp.CreatedBy = a.CreatedBy
+	authorResp.UpdatedAt = a.UpdatedAt
+
+	return &authorResp, nil
 
 }
 
@@ -70,12 +70,13 @@ func (s *AuthorServiceImpl) GetAuthors() (*[]dto.AuthorResponse, error) {
 		if !ok {
 			return nil, err
 		}
-		author := dto.AuthorResponse{
-			ID:         a.ID,
-			Name:       a.Name,
-			Created_at: a.CreatedAt,
-			Updated_at: a.UpdatedAt,
-		}
+		var author dto.AuthorResponse
+		author.ID = a.ID
+		author.Name = a.Name
+		author.CreatedAt = a.CreatedAt
+		author.CreatedBy = a.CreatedBy
+		author.UpdatedAt = a.UpdatedAt
+
 		authors = append(authors, author)
 	}
 	return &authors, nil

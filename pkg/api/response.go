@@ -13,7 +13,7 @@ const (
 type Response struct {
 	Status string          `json:"status"`
 	Error  *ResponseError  `json:"error,omitempty"`
-	Result json.RawMessage `json:"result"`
+	Result json.RawMessage `json:"result,omitempty"`
 }
 
 type ResponseError struct {

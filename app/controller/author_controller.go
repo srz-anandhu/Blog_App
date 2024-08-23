@@ -28,7 +28,7 @@ func NewAuthorController(authorService service.AuthorService) AuthorController {
 func (c *authorControllerImpl) GetAllAuthors(w http.ResponseWriter, r *http.Request) {
 	authors, err := c.authorService.GetAuthors()
 	if err != nil {
-		api.Fail(w, http.StatusBadRequest, "failed", err.Error())
+		api.Fail(w, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 	api.Success(w, http.StatusOK, authors)
@@ -39,7 +39,7 @@ func (c *authorControllerImpl) GetAuthor(w http.ResponseWriter, r *http.Request)
 	authorResponse, err := c.authorService.GetAuthor(r)
 	if err != nil {
 		log.Printf("can't get author due to : %s", err)
-		api.Fail(w, http.StatusBadRequest, "failed", err.Error())
+		api.Fail(w, http.StatusInternalServerError, "failed", err.Error())
 		return
 	}
 	api.Success(w, http.StatusOK, authorResponse)

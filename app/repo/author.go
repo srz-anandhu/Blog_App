@@ -34,12 +34,12 @@ func (r *AuthorRepoImpl) TableName() string {
 
 func (r *AuthorRepoImpl) Create() (lastInsertedID int64, err error) {
 
-	query := `INSERT INTO` + r.TableName() + `(name)
+	query := `INSERT INTO` + r.TableName() + `(name,created_by)
 			  VALUES ($1)
 			  RETURNING id`
 
 	var author Author
-	if err := r.db.QueryRow(query, author.Name).Scan(&lastInsertedID); err != nil {
+	if err := r.db.QueryRow(query, author.Name, author.CreatedBy).Scan(&lastInsertedID); err != nil {
 		return 0, fmt.Errorf("couldn't get last inserted id due to: %w", err)
 	}
 	return lastInsertedID, nil
@@ -79,19 +79,19 @@ func (r *AuthorRepoImpl) Delete(id int) (err error) {
 }
 
 func (r *AuthorRepoImpl) GetOne(id int) (result interface{}, err error) {
-	query := `SELECT id,name,created_at,updated_at
+	query := `SELECT id,name,created_at,updated_at,created_by
 			  FROM` + r.TableName() +
 		`WHERE id=$1`
 
 	var author Author
-	if err := r.db.QueryRow(query, id).Scan(&author.ID, &author.Name, &author.CreatedAt, &author.UpdatedAt); err != nil {
+	if err := r.db.QueryRow(query, id).Scan(&author.ID, &author.Name, &author.CreatedAt, &author.UpdatedAt, &author.CreatedBy); err != nil {
 		return nil, fmt.Errorf("query failed due to : %w", err)
 	}
 	return author, nil
 }
 
 func (r *AuthorRepoImpl) GetAll() (results []interface{}, err error) {
-	query := `SELECT id,name,created_at,updated_at
+	query := `SELECT id,name,created_at,created_by,updated_at
 	         FROM ` + r.TableName() + ``
 
 	rows, err := r.db.Query(query)
@@ -103,7 +103,7 @@ func (r *AuthorRepoImpl) GetAll() (results []interface{}, err error) {
 	for rows.Next() {
 		var author Author
 
-		if err := rows.Scan(&author.ID, &author.Name, &author.CreatedAt, &author.UpdatedAt); err != nil {
+		if err := rows.Scan(&author.ID, &author.Name, &author.CreatedAt, &author.CreatedBy, &author.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("row scan failed due to : %w", err)
 		}
 		results = append(results, author)
