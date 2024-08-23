@@ -4,9 +4,6 @@ import (
 	"blog/app/dto"
 	"blog/app/repo"
 	"net/http"
-	"strconv"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type BlogService interface {
@@ -29,16 +26,15 @@ func NewBlogService(blogRepo repo.Repo) BlogService {
 
 func (s *BlogServiceImpl) GetBlog(r *http.Request) (*dto.BlogResponse, error) {
 
-	// Get Blog ID from request
-	strID := chi.URLParam(r, "id")
-	// Converting to Int
-	intID, err := strconv.Atoi(strID)
-	if err != nil {
+	req := &dto.BlogRequest{}
+	if err := req.Parse(r); err != nil {
 		return nil, err
 	}
-
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
 	// Calling GetOne function from repo
-	result, err := s.blogRepo.GetOne(intID)
+	result, err := s.blogRepo.GetOne(req.ID)
 	if err != nil {
 		return nil, err
 	}

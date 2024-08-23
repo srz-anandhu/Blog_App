@@ -4,9 +4,6 @@ import (
 	"blog/app/dto"
 	"blog/app/repo"
 	"net/http"
-	"strconv"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type AuthorService interface {
@@ -28,15 +25,15 @@ func NewAuthorService(authorRepo repo.Repo) AuthorService {
 
 func (s *AuthorServiceImpl) GetAuthor(r *http.Request) (*dto.AuthorResponse, error) {
 
-	// get author ID from request
-	strID := chi.URLParam(r, "id")
-	// converting string ID to int ID
-	intID, err := strconv.Atoi(strID)
-
-	if err != nil {
+	req := &dto.AuthorRequest{}
+	if err := req.Parse(r); err != nil {
 		return nil, err
 	}
-	result, err := s.authorRepo.GetOne(intID)
+
+	if err := req.Validate(); err != nil {
+		return nil, err
+	}
+	result, err := s.authorRepo.GetOne(req.ID)
 	if err != nil {
 		return nil, err
 	}
