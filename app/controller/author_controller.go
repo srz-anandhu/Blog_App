@@ -58,7 +58,7 @@ func (c *authorControllerImpl) DeleteAuthor(w http.ResponseWriter, r *http.Reque
 func (c *authorControllerImpl) CreateAuthor(w http.ResponseWriter, r *http.Request) {
 	authorID, err := c.authorService.CreateAuthor(r)
 	if err != nil {
-		api.Fail(w, http.StatusUnprocessableEntity, "failed to create author", err.Error())
+		api.Fail(w, http.StatusBadRequest, "failed to create author", err.Error())
 		return
 	}
 	api.Success(w, http.StatusCreated, authorID)

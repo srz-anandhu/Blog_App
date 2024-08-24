@@ -58,5 +58,5 @@ func (c *blogControllerImpl) CreateBlog(w http.ResponseWriter, r *http.Request) 
 		api.Fail(w, http.StatusBadRequest, "blog creation failed", err.Error())
 		return
 	}
-	api.Success(w, http.StatusOK, blogID)
+	api.Success(w, http.StatusCreated, blogID)
 }

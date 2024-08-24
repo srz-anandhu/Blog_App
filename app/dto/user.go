@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -34,6 +35,27 @@ func (u *UserRequest) Parse(r *http.Request) error {
 }
 
 func (u *UserRequest) Validate() error {
+	validate := validator.New()
+	if err := validate.Struct(u); err != nil {
+		return err
+	}
+	return nil
+}
+
+// For Body param
+type UserCreateRequest struct {
+	UserName string `json:"username"`
+	Password string `json:"password"`
+}
+
+func (u *UserCreateRequest) Parse(r *http.Request) error {
+	if err := json.NewDecoder(r.Body).Decode(u); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *UserCreateRequest) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(u); err != nil {
 		return err

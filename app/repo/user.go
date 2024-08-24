@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"blog/app/dto"
 	"blog/pkg/salthash"
 	"database/sql"
 	"fmt"
@@ -18,14 +19,23 @@ type User struct {
 	DeleteInfo
 }
 
+type UserRepo interface {
+	Create(userReq *dto.UserCreateRequest) (lastInsertedID int64, err error)
+	Update(id int) (err error)
+	Delete(id int) (err error)
+	GetOne(id int) (result interface{}, err error)
+	GetAll() (results []interface{}, err error)
+	TableName() string // Function for reuse/modify table name
+}
+
 type UserRepoImpl struct {
 	db *sql.DB
 }
 
 // For checking implementation of Repo interface
-var _ Repo = (*UserRepoImpl)(nil)
+var _ UserRepo = (*UserRepoImpl)(nil)
 
-func NewUserRepo(db *sql.DB) Repo {
+func NewUserRepo(db *sql.DB) UserRepo {
 	return &UserRepoImpl{
 		db: db,
 	}
@@ -38,20 +48,20 @@ func (r *UserRepoImpl) TableName() string {
 
 var user User
 
-func (r *UserRepoImpl) Create() (lastInsertedID int64, err error) {
+func (r *UserRepoImpl) Create(userReq *dto.UserCreateRequest) (lastInsertedID int64, err error) {
 	// Generate Salt
 	salt, err := salthash.GenerateSalt(10)
 	if err != nil {
 		return 0, fmt.Errorf("error generating salt : %w", err)
 	}
 	// Hash Password
-	PasswordString := salthash.HashPassword(user.Password, salt)
+	PasswordString := salthash.HashPassword(userReq.Password, salt)
 
 	query := `INSERT INTO` + r.TableName() + `(username,password,salt)
 			  VALUES ($1,$2,$3)
 			  RETURNING id`
 
-	if err := r.db.QueryRow(query, user.UserName, PasswordString, salt).Scan(&lastInsertedID); err != nil {
+	if err := r.db.QueryRow(query, userReq.UserName, PasswordString,salt).Scan(&lastInsertedID); err != nil {
 		return 0, fmt.Errorf("query execution failed due to : %w", err)
 	}
 

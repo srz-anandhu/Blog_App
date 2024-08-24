@@ -10,16 +10,17 @@ type UserService interface {
 	GetUser(r *http.Request) (*dto.UserResponse, error)
 	GetAllUsers() (*[]dto.UserResponse, error)
 	DeleteUser(r *http.Request) error
+	CreateUser(r *http.Request) (int64, error)
 }
 
 type UserServiceImpl struct {
-	userRepo repo.Repo
+	userRepo repo.UserRepo
 }
 
 // For checking implementation of UserService interface
 var _ UserService = (*UserServiceImpl)(nil)
 
-func NewUserService(userRepo repo.Repo) UserService {
+func NewUserService(userRepo repo.UserRepo) UserService {
 	return &UserServiceImpl{
 		userRepo: userRepo,
 	}
@@ -96,4 +97,19 @@ func (s *UserServiceImpl) DeleteUser(r *http.Request) error {
 		return err
 	}
 	return nil
+}
+
+func (c *UserServiceImpl) CreateUser(r *http.Request) (int64, error) {
+	body := &dto.UserCreateRequest{}
+	if err := body.Parse(r); err != nil {
+		return 0, err
+	}
+	if err := body.Validate(); err != nil {
+		return 0, err
+	}
+	userID, err := c.userRepo.Create(body)
+	if err != nil {
+		return 0, err
+	}
+	return userID, nil
 }
