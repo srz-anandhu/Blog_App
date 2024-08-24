@@ -95,7 +95,7 @@ func (r *UserRepoImpl) Delete(id int) (err error) {
 
 func (r *UserRepoImpl) GetAll() (results []interface{}, err error) {
 	query := `SELECT id,username,password,salt,created_at,updated_at,is_deleted,deleted_at
-	        FROM` + r.TableName() + `WHERE is_deleted=false`
+	        FROM` + r.TableName() + ``
 
 	rows, err := r.db.Query(query)
 	if err != nil {

@@ -34,5 +34,10 @@ func (c *userControllerImpl) GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *userControllerImpl) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-
+	userResp, err := c.userService.GetAllUsers()
+	if err != nil {
+		api.Fail(w, http.StatusInternalServerError, "failed", err.Error())
+		return
+	}
+	api.Success(w, http.StatusOK, userResp)
 }
