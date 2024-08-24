@@ -9,6 +9,7 @@ import (
 type BlogController interface {
 	GetAllBlogs(w http.ResponseWriter, r *http.Request)
 	GetBlog(w http.ResponseWriter, r *http.Request)
+	DeleteBlog(w http.ResponseWriter, r *http.Request)
 }
 
 // For checking implementation of BlogController interface
@@ -40,4 +41,12 @@ func (c *blogControllerImpl) GetAllBlogs(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	api.Success(w, http.StatusOK, blogResp)
+}
+
+func (c *blogControllerImpl) DeleteBlog(w http.ResponseWriter, r *http.Request) {
+	if err := c.blogService.DeleteBlog(r); err != nil {
+		api.Fail(w, http.StatusInternalServerError, "failed to delete blog", err.Error())
+		return
+	}
+	api.Success(w, http.StatusOK, "Blog deleted successfully")
 }

@@ -9,6 +9,7 @@ import (
 type BlogService interface {
 	GetBlog(r *http.Request) (*dto.BlogResponse, error)
 	GetAllBlogs() (*[]dto.BlogResponse, error)
+	DeleteBlog(r *http.Request) error
 }
 
 type BlogServiceImpl struct {
@@ -90,4 +91,18 @@ func (s *BlogServiceImpl) GetAllBlogs() (*[]dto.BlogResponse, error) {
 		blogs = append(blogs, blogResp)
 	}
 	return &blogs, nil
+}
+
+func (s *BlogServiceImpl) DeleteBlog(r *http.Request) error {
+	req := &dto.AuthorRequest{}
+	if err := req.Parse(r); err != nil {
+		return err
+	}
+	if err := req.Validate(); err != nil {
+		return err
+	}
+	if err := s.blogRepo.Delete(req.ID); err != nil {
+		return err
+	}
+	return nil
 }
