@@ -43,6 +43,7 @@ func apiRouter(db *sql.DB) chi.Router {
 		r.Get("/", authorController.GetAllAuthors)
 		r.Get("/{id}", authorController.GetAuthor)
 		r.Delete("/{id}", authorController.DeleteAuthor)
+		r.Post("/create", authorController.CreateAuthor)
 	})
 
 	return r

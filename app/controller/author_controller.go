@@ -11,6 +11,7 @@ type AuthorController interface {
 	GetAllAuthors(w http.ResponseWriter, r *http.Request)
 	GetAuthor(w http.ResponseWriter, r *http.Request)
 	DeleteAuthor(w http.ResponseWriter, r *http.Request)
+	CreateAuthor(w http.ResponseWriter, r *http.Request)
 }
 
 // For checking implementation of AuthorController interface
@@ -52,4 +53,13 @@ func (c *authorControllerImpl) DeleteAuthor(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	api.Success(w, http.StatusOK, "Deleted author successfully")
+}
+
+func (c *authorControllerImpl) CreateAuthor(w http.ResponseWriter, r *http.Request) {
+	authorID, err := c.authorService.CreateAuthor(r)
+	if err != nil {
+		api.Fail(w, http.StatusUnprocessableEntity, "failed to create author", err.Error())
+		return
+	}
+	api.Success(w, http.StatusCreated, authorID)
 }

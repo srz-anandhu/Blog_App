@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"blog/app/dto"
 	"database/sql"
 	"fmt"
 	"time"
@@ -14,14 +15,23 @@ type Author struct {
 	DeleteInfo
 }
 
+type AuthorRepo interface {
+	Create(author *dto.AuthorCreateRequest) (lastInsertedID int64, err error)
+	Update(id int) (err error)
+	Delete(id int) (err error)
+	GetOne(id int) (result interface{}, err error)
+	GetAll() (results []interface{}, err error)
+	TableName() string // Function for reuse/modify table name
+}
+
 type AuthorRepoImpl struct {
 	db *sql.DB
 }
 
-// For checking implementation of Repo interface
-var _ Repo = (*AuthorRepoImpl)(nil)
+// For checking implementation of AuthorRepo interface
+var _ AuthorRepo = (*AuthorRepoImpl)(nil)
 
-func NewAuthorRepo(db *sql.DB) Repo {
+func NewAuthorRepo(db *sql.DB) AuthorRepo {
 	return &AuthorRepoImpl{
 		db: db,
 	}
@@ -32,13 +42,12 @@ func (r *AuthorRepoImpl) TableName() string {
 	return " authors "
 }
 
-func (r *AuthorRepoImpl) Create() (lastInsertedID int64, err error) {
+func (r *AuthorRepoImpl) Create(author *dto.AuthorCreateRequest) (lastInsertedID int64, err error) {
 
 	query := `INSERT INTO` + r.TableName() + `(name,created_by)
-			  VALUES ($1)
+			  VALUES ($1,$2)
 			  RETURNING id`
 
-	var author Author
 	if err := r.db.QueryRow(query, author.Name, author.CreatedBy).Scan(&lastInsertedID); err != nil {
 		return 0, fmt.Errorf("couldn't get last inserted id due to: %w", err)
 	}

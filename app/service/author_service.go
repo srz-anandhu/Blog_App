@@ -10,15 +10,16 @@ type AuthorService interface {
 	GetAuthor(r *http.Request) (*dto.AuthorResponse, error)
 	GetAuthors() (*[]dto.AuthorResponse, error)
 	DeleteAuthor(r *http.Request) error
+	CreateAuthor(r *http.Request) (int64, error)
 }
 
 var _ AuthorService = (*AuthorServiceImpl)(nil)
 
 type AuthorServiceImpl struct {
-	authorRepo repo.Repo
+	authorRepo repo.AuthorRepo
 }
 
-func NewAuthorService(authorRepo repo.Repo) AuthorService {
+func NewAuthorService(authorRepo repo.AuthorRepo) AuthorService {
 	return &AuthorServiceImpl{
 		authorRepo: authorRepo,
 	}
@@ -94,4 +95,20 @@ func (s *AuthorServiceImpl) DeleteAuthor(r *http.Request) error {
 		return err
 	}
 	return nil
+}
+
+func (s *AuthorServiceImpl) CreateAuthor(r *http.Request) (int64, error) {
+	body := &dto.AuthorCreateRequest{}
+	if err := body.Parse(r); err != nil {
+		return 0, err
+	}
+	if err := body.Validate(); err != nil {
+		return 0, err
+	}
+
+	authorID, err := s.authorRepo.Create(body)
+	if err != nil {
+		return 0, err
+	}
+	return authorID, nil
 }
