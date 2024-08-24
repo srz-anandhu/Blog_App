@@ -8,6 +8,7 @@ import (
 
 type UserService interface {
 	GetUser(r *http.Request) (*dto.UserResponse, error)
+	GetAllUsers() (*[]dto.UserResponse, error)
 }
 
 type UserServiceImpl struct {
@@ -52,4 +53,32 @@ func (s *UserServiceImpl) GetUser(r *http.Request) (*dto.UserResponse, error) {
 	user.IsDeleted = u.IsDeleted
 
 	return &user, nil
+}
+
+func (s *UserServiceImpl) GetAllUsers() (*[]dto.UserResponse, error) {
+	results, err := s.userRepo.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	var users []dto.UserResponse
+
+	for _, val := range results {
+		u, ok := val.(repo.User)
+		if !ok {
+			return nil, err
+		}
+		var user dto.UserResponse
+
+		user.ID = u.ID
+		user.UserName = u.UserName
+		user.Password = u.Password
+		user.Salt = u.Salt
+		user.CreatedAt = u.CreatedAt
+		user.UpdatedAt = u.UpdatedAt
+		user.IsDeleted = u.IsDeleted
+		user.DeletedAt = u.DeletedAt
+
+		users = append(users, user)
+	}
+	return &users, nil
 }
