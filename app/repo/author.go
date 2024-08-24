@@ -68,7 +68,7 @@ func (r *AuthorRepoImpl) Update(id int) (err error) {
 func (r *AuthorRepoImpl) Delete(id int) (err error) {
 	query := `UPDATE` + r.TableName() +
 			 `SET deleted_at=$1
-		      WHERE id=$3`
+		      WHERE id=$2`
 
 	_, err = r.db.Exec(query, time.Now().UTC(), id)
 	if err != nil {
@@ -78,12 +78,12 @@ func (r *AuthorRepoImpl) Delete(id int) (err error) {
 }
 
 func (r *AuthorRepoImpl) GetOne(id int) (result interface{}, err error) {
-	query := `SELECT id,name,created_at,updated_at,created_by
+	query := `SELECT id,name,created_at,updated_at,created_by,deleted_at
 			  FROM` + r.TableName() +
 		`WHERE id=$1`
 
 	var author Author
-	if err := r.db.QueryRow(query, id).Scan(&author.ID, &author.Name, &author.CreatedAt, &author.UpdatedAt, &author.CreatedBy); err != nil {
+	if err := r.db.QueryRow(query, id).Scan(&author.ID, &author.Name, &author.CreatedAt, &author.UpdatedAt, &author.CreatedBy, &author.DeletedAt); err != nil {
 		return nil, fmt.Errorf("query failed due to : %w", err)
 	}
 	return author, nil

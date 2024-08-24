@@ -51,6 +51,7 @@ func (s *AuthorServiceImpl) GetAuthor(r *http.Request) (*dto.AuthorResponse, err
 	authorResp.CreatedAt = a.CreatedAt
 	authorResp.CreatedBy = a.CreatedBy
 	authorResp.UpdatedAt = a.UpdatedAt
+	authorResp.DeletedAt = a.DeletedAt
 
 	return &authorResp, nil
 

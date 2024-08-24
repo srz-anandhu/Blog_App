@@ -10,6 +10,7 @@ import (
 type AuthorController interface {
 	GetAllAuthors(w http.ResponseWriter, r *http.Request)
 	GetAuthor(w http.ResponseWriter, r *http.Request)
+	DeleteAuthor(w http.ResponseWriter, r *http.Request)
 }
 
 // For checking implementation of AuthorController interface
@@ -43,4 +44,12 @@ func (c *authorControllerImpl) GetAuthor(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	api.Success(w, http.StatusOK, authorResponse)
+}
+
+func (c *authorControllerImpl) DeleteAuthor(w http.ResponseWriter, r *http.Request) {
+	if err := c.authorService.DeleteAuthor(r); err != nil {
+		api.Fail(w, http.StatusInternalServerError, "author delete failed", err.Error())
+		return
+	}
+	api.Success(w, http.StatusOK, "Deleted author successfully")
 }

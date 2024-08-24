@@ -39,6 +39,7 @@ func apiRouter(db *sql.DB) chi.Router {
 	r.Route("/authors", func(r chi.Router) {
 		r.Get("/", authorController.GetAllAuthors)
 		r.Get("/{id}", authorController.GetAuthor)
+		r.Delete("/{id}", authorController.DeleteAuthor)
 	})
 
 	return r
