@@ -21,16 +21,20 @@ func apiRouter(db *sql.DB) chi.Router {
 	blogService := service.NewBlogService(blogRepo)
 	blogController := controller.NewBlogController(blogService)
 
+	// User
+	userRepo := repo.NewUserRepo(db)
+	userService := service.NewUserService(userRepo)
+	userController := controller.NewUserController(userService)
 	r := chi.NewRouter()
 	r.Route("/blogs", func(r chi.Router) {
 		r.Get("/", blogController.GetAllBlogs)
 		r.Get("/{id}", blogController.GetBlog)
 	})
 
-	// r.Route("/users", func(r chi.Router) {
-	// 	r.Get("/", userController.GetAllUsers)
-	// 	r.Get("/{id}", userController.GetUser)
-	// })
+	r.Route("/users", func(r chi.Router) {
+		r.Get("/", userController.GetAllUsers)
+		r.Get("/{id}", userController.GetUser)
+	})
 
 	r.Route("/authors", func(r chi.Router) {
 		r.Get("/", authorController.GetAllAuthors)

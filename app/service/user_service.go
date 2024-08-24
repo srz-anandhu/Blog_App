@@ -45,6 +45,7 @@ func (s *UserServiceImpl) GetUser(r *http.Request) (*dto.UserResponse, error) {
 	user.ID = u.ID
 	user.UserName = u.UserName
 	user.Password = u.Password
+	user.Salt = u.Salt
 	user.CreatedAt = u.CreatedAt
 	user.UpdatedAt = u.UpdatedAt
 	user.DeletedAt = u.DeletedAt

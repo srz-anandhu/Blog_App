@@ -18,8 +18,10 @@ type userControllerImpl struct {
 	userService service.UserService
 }
 
-func NewUserController() UserController {
-	return &userControllerImpl{}
+func NewUserController(userService service.UserService) UserController {
+	return &userControllerImpl{
+		userService: userService,
+	}
 }
 
 func (c *userControllerImpl) GetUser(w http.ResponseWriter, r *http.Request) {
