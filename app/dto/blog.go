@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -34,6 +35,30 @@ func (b *BlogRequest) Parse(r *http.Request) error {
 }
 
 func (b *BlogRequest) Validate() error {
+	validate := validator.New()
+	if err := validate.Struct(b); err != nil {
+		return err
+	}
+	return nil
+}
+
+// For Body param
+type BlogCreateRequest struct {
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	AuthorID  int    `json:"author_id"` // Author.ID
+	Status    int    `json:"status"`
+	CreatedBy int    `json:"created_by"` // User.ID
+}
+
+func (b *BlogCreateRequest) Parse(r *http.Request) error {
+	if err := json.NewDecoder(r.Body).Decode(b); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (b *BlogCreateRequest) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(b); err != nil {
 		return err

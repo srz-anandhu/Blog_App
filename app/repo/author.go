@@ -76,7 +76,7 @@ func (r *AuthorRepoImpl) Update(id int) (err error) {
 
 func (r *AuthorRepoImpl) Delete(id int) (err error) {
 	query := `UPDATE` + r.TableName() +
-			 `SET deleted_at=$1
+		`SET deleted_at=$1
 		      WHERE id=$2`
 
 	_, err = r.db.Exec(query, time.Now().UTC(), id)

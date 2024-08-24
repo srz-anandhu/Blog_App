@@ -10,6 +10,7 @@ type BlogController interface {
 	GetAllBlogs(w http.ResponseWriter, r *http.Request)
 	GetBlog(w http.ResponseWriter, r *http.Request)
 	DeleteBlog(w http.ResponseWriter, r *http.Request)
+	CreateBlog(w http.ResponseWriter, r *http.Request)
 }
 
 // For checking implementation of BlogController interface
@@ -49,4 +50,13 @@ func (c *blogControllerImpl) DeleteBlog(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	api.Success(w, http.StatusOK, "Blog deleted successfully")
+}
+
+func (c *blogControllerImpl) CreateBlog(w http.ResponseWriter, r *http.Request) {
+	blogID, err := c.blogService.CreateBlog(r)
+	if err != nil {
+		api.Fail(w, http.StatusBadRequest, "blog creation failed", err.Error())
+		return
+	}
+	api.Success(w, http.StatusOK, blogID)
 }

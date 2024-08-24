@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"blog/app/dto"
 	"database/sql"
 	"fmt"
 	"time"
@@ -17,14 +18,23 @@ type Blog struct {
 	DeleteInfo
 }
 
+type BlogRepo interface {
+	Create(blogReq *dto.BlogCreateRequest) (lastInsertedID int64, err error)
+	Update(id int) (err error)
+	Delete(id int) (err error)
+	GetOne(id int) (result interface{}, err error)
+	GetAll() (results []interface{}, err error)
+	TableName() string // Function for reuse/modify table name
+}
+
 type BlogRepoImpl struct {
 	db *sql.DB
 }
 
 // For checking implementation of Repo interface
-var _ Repo = (*BlogRepoImpl)(nil)
+var _ BlogRepo = (*BlogRepoImpl)(nil)
 
-func NewBlogRepo(db *sql.DB) Repo {
+func NewBlogRepo(db *sql.DB) BlogRepo {
 	return &BlogRepoImpl{
 		db: db,
 	}
@@ -37,13 +47,13 @@ func (r *BlogRepoImpl) TableName() string {
 
 var blog Blog
 
-func (r *BlogRepoImpl) Create() (lastInsertedID int64, err error) {
+func (r *BlogRepoImpl) Create(blogReq *dto.BlogCreateRequest) (lastInsertedID int64, err error) {
 
 	query := `INSERT INTO` + r.TableName() + `(title,content,author_id,status,created_by) 
 			 VALUES ($1,$2,$3,$4,$5)
 			 RETURNING id`
 
-	if err := r.db.QueryRow(query, blog.Title, blog.Content, blog.AuthorID, blog.Status, blog.CreatedBy).Scan(&lastInsertedID); err != nil {
+	if err := r.db.QueryRow(query, blogReq.Title, blogReq.Content, blogReq.AuthorID, blogReq.Status, blogReq.CreatedBy).Scan(&lastInsertedID); err != nil {
 		return 0, fmt.Errorf("couldn't get last inserted id dut to : %w", err)
 	}
 	return lastInsertedID, nil

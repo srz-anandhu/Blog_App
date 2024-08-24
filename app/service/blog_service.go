@@ -10,16 +10,17 @@ type BlogService interface {
 	GetBlog(r *http.Request) (*dto.BlogResponse, error)
 	GetAllBlogs() (*[]dto.BlogResponse, error)
 	DeleteBlog(r *http.Request) error
+	CreateBlog(r *http.Request) (int64, error)
 }
 
 type BlogServiceImpl struct {
-	blogRepo repo.Repo
+	blogRepo repo.BlogRepo
 }
 
 // For checking implementation of BlogService interface
 var _ BlogService = (*BlogServiceImpl)(nil)
 
-func NewBlogService(blogRepo repo.Repo) BlogService {
+func NewBlogService(blogRepo repo.BlogRepo) BlogService {
 	return &BlogServiceImpl{
 		blogRepo: blogRepo,
 	}
@@ -105,4 +106,19 @@ func (s *BlogServiceImpl) DeleteBlog(r *http.Request) error {
 		return err
 	}
 	return nil
+}
+
+func (s *BlogServiceImpl) CreateBlog(r *http.Request) (int64, error) {
+	body := &dto.BlogCreateRequest{}
+	if err := body.Parse(r); err != nil {
+		return 0, err
+	}
+	if err := body.Validate(); err != nil {
+		return 0, err
+	}
+	blogID, err := s.blogRepo.Create(body)
+	if err != nil {
+		return 0, err
+	}
+	return blogID, nil
 }
