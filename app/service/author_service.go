@@ -9,6 +9,7 @@ import (
 type AuthorService interface {
 	GetAuthor(r *http.Request) (*dto.AuthorResponse, error)
 	GetAuthors() (*[]dto.AuthorResponse, error)
+	DeleteAuthor(r *http.Request) error
 }
 
 var _ AuthorService = (*AuthorServiceImpl)(nil)
@@ -78,4 +79,18 @@ func (s *AuthorServiceImpl) GetAuthors() (*[]dto.AuthorResponse, error) {
 	}
 	return &authors, nil
 
+}
+
+func (s *AuthorServiceImpl) DeleteAuthor(r *http.Request) error {
+	req := &dto.AuthorRequest{}
+	if err := req.Parse(r); err != nil {
+		return err
+	}
+	if err := req.Validate(); err != nil {
+		return err
+	}
+	if err := s.authorRepo.Delete(req.ID); err != nil {
+		return err
+	}
+	return nil
 }

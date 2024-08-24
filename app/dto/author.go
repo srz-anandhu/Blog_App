@@ -19,6 +19,7 @@ type AuthorRequest struct {
 	ID int `validate:"required"`
 }
 
+// For Path param
 func (a *AuthorRequest) Parse(r *http.Request) error {
 	// get author ID from request
 	strID := chi.URLParam(r, "id")

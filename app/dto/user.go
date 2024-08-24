@@ -22,6 +22,7 @@ type UserRequest struct {
 	ID int `validate:"required"`
 }
 
+// For Path param
 func (u *UserRequest) Parse(r *http.Request) error {
 	strID := chi.URLParam(r, "id")
 	intID, err := strconv.Atoi(strID)
