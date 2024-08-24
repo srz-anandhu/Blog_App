@@ -9,6 +9,7 @@ import (
 type UserController interface {
 	GetAllUsers(w http.ResponseWriter, r *http.Request)
 	GetUser(w http.ResponseWriter, r *http.Request)
+	DeleteUser(w http.ResponseWriter, r *http.Request)
 }
 
 // For checking implementation of UserController interface
@@ -40,4 +41,12 @@ func (c *userControllerImpl) GetAllUsers(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	api.Success(w, http.StatusOK, userResp)
+}
+
+func (c *userControllerImpl) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	if err := c.userService.DeleteUser(r); err != nil {
+		api.Fail(w, http.StatusInternalServerError, "failed to delete user", err.Error())
+		return
+	}
+	api.Success(w, http.StatusOK, "Deleted user successfully")
 }

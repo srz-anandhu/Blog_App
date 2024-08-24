@@ -9,6 +9,7 @@ import (
 type UserService interface {
 	GetUser(r *http.Request) (*dto.UserResponse, error)
 	GetAllUsers() (*[]dto.UserResponse, error)
+	DeleteUser(r *http.Request) error
 }
 
 type UserServiceImpl struct {
@@ -81,4 +82,18 @@ func (s *UserServiceImpl) GetAllUsers() (*[]dto.UserResponse, error) {
 		users = append(users, user)
 	}
 	return &users, nil
+}
+
+func (s *UserServiceImpl) DeleteUser(r *http.Request) error {
+	req := &dto.UserRequest{}
+	if err := req.Parse(r); err != nil {
+		return err
+	}
+	if err := req.Validate(); err != nil {
+		return err
+	}
+	if err := s.userRepo.Delete(req.ID); err != nil {
+		return err
+	}
+	return nil
 }
