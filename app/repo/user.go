@@ -116,13 +116,11 @@ func (r *UserRepoImpl) GetAll() (results []interface{}, err error) {
 }
 
 func (r *UserRepoImpl) GetOne(id int) (result interface{}, err error) {
-	query := `SELECT id,username,password,created_at,updated_at
+	query := `SELECT id,username,password,created_at,updated_at,is_deleted
 			  FROM` + r.TableName() +
-		`WHERE id=$1
-			  AND 
-			  is_deleted=false`
+		`WHERE id=$1`
 	// var user User
-	if err := r.db.QueryRow(query, id).Scan(&user.ID, &user.UserName, &user.Password, &user.CreatedAt, &user.UpdatedAt); err != nil {
+	if err := r.db.QueryRow(query, id).Scan(&user.ID, &user.UserName, &user.Password, &user.CreatedAt, &user.UpdatedAt, &user.IsDeleted); err != nil {
 		return nil, fmt.Errorf("query execution failed due to : %w", err)
 	}
 	return user, nil
