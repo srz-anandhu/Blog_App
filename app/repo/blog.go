@@ -86,16 +86,16 @@ func (r *BlogRepoImpl) Delete(id int) (err error) {
 }
 
 func (r *BlogRepoImpl) GetOne(id int) (result interface{}, err error) {
-	query := `SELECT id,title,content,author_id,created_at,created_by,updated_at,updated_by FROM` + r.TableName() + `WHERE id=$1 AND status=2`
+	query := `SELECT id,title,content,author_id,status,created_at,created_by,updated_at,updated_by,deleted_at,deleted_by FROM` + r.TableName() + `WHERE id=$1`
 		var blog Blog
-	if err := r.db.QueryRow(query, id).Scan(&blog.ID, &blog.Title, &blog.Content, &blog.AuthorID, &blog.CreatedAt, &blog.CreatedBy, &blog.UpdatedAt, &blog.UpdatedBy); err != nil {
+	if err := r.db.QueryRow(query, id).Scan(&blog.ID, &blog.Title, &blog.Content, &blog.AuthorID, &blog.Status, &blog.CreatedAt, &blog.CreatedBy, &blog.UpdatedAt, &blog.UpdatedBy, &blog.DeletedAt, &blog.DeletedBy); err != nil {
 		return nil, fmt.Errorf("query execution failed due to : %w", err)
 	}
 	return blog, nil
 }
 
 func (r *BlogRepoImpl) GetAll() (results []interface{}, err error) {
-	query := `SELECT id,title,content,author_id,created_at,created_by,updated_at,updated_by
+	query := `SELECT id,title,content,author_id,status,created_at,created_by,updated_at,updated_by,deleted_at,deleted_by
 			 FROM` + r.TableName() + `` // blogs
 
 	rows, err := r.db.Query(query)
@@ -105,7 +105,7 @@ func (r *BlogRepoImpl) GetAll() (results []interface{}, err error) {
 	defer rows.Close()
 	for rows.Next() {
 		//	var blog Blog
-		if err := rows.Scan(&blog.ID, &blog.Title, &blog.Content, &blog.AuthorID, &blog.CreatedAt, &blog.CreatedBy, &blog.UpdatedAt, &blog.UpdatedBy); err != nil {
+		if err := rows.Scan(&blog.ID, &blog.Title, &blog.Content, &blog.AuthorID, &blog.Status, &blog.CreatedAt, &blog.CreatedBy, &blog.UpdatedAt, &blog.UpdatedBy, &blog.DeletedAt, &blog.DeletedBy); err != nil {
 			return nil, fmt.Errorf("row scan failed due to : %w", err)
 		}
 		results = append(results, blog)

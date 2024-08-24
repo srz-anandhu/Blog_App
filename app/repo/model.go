@@ -11,5 +11,5 @@ type Model struct {
 
 type DeleteInfo struct {
 	DeletedBy *int       `json:"deleted_by,omitempty"` // User.ID
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 }

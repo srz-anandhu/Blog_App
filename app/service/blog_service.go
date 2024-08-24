@@ -50,11 +50,12 @@ func (s *BlogServiceImpl) GetBlog(r *http.Request) (*dto.BlogResponse, error) {
 	blog.Title = b.Title
 	blog.Content = b.Content
 	blog.AuthorID = b.AuthorID
+	blog.Status = b.Status
 	blog.CreatedBy = b.CreatedBy
 	blog.CreatedAt = b.CreatedAt
 	blog.UpdatedBy = b.UpdatedBy
 	blog.UpdatedAt = b.UpdatedAt
-	blog.DeletedBy = b.UpdatedBy
+	blog.DeletedBy = b.DeletedBy
 	blog.DeletedAt = b.DeletedAt
 
 	return &blog, nil
@@ -78,10 +79,13 @@ func (s *BlogServiceImpl) GetAllBlogs() (*[]dto.BlogResponse, error) {
 		blogResp.Title = b.Title
 		blogResp.Content = b.Content
 		blogResp.AuthorID = b.AuthorID
+		blogResp.Status = b.Status
 		blogResp.CreatedBy = b.CreatedBy
 		blogResp.CreatedAt = b.CreatedAt
 		blogResp.UpdatedBy = b.UpdatedBy
 		blogResp.UpdatedAt = b.UpdatedAt
+		blogResp.DeletedBy = b.DeletedBy
+		blogResp.DeletedAt = b.DeletedAt
 
 		blogs = append(blogs, blogResp)
 	}
