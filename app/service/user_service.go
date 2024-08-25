@@ -11,6 +11,7 @@ type UserService interface {
 	GetAllUsers() (*[]dto.UserResponse, error)
 	DeleteUser(r *http.Request) error
 	CreateUser(r *http.Request) (int64, error)
+	UpdateUser(r *http.Request) error
 }
 
 type UserServiceImpl struct {
@@ -112,4 +113,18 @@ func (c *UserServiceImpl) CreateUser(r *http.Request) (int64, error) {
 		return 0, err
 	}
 	return userID, nil
+}
+
+func (s *UserServiceImpl) UpdateUser(r *http.Request) error {
+	body := &dto.UserUpdateRequest{}
+	if err := body.Parse(r); err != nil {
+		return err
+	}
+	if err := body.Validate(); err != nil {
+		return err
+	}
+	if err := s.userRepo.Update(body); err != nil {
+		return err
+	}
+	return nil
 }

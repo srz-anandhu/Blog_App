@@ -11,6 +11,7 @@ type UserController interface {
 	GetUser(w http.ResponseWriter, r *http.Request)
 	DeleteUser(w http.ResponseWriter, r *http.Request)
 	CreateUser(w http.ResponseWriter, r *http.Request)
+	UpdateUser(w http.ResponseWriter, r *http.Request)
 }
 
 // For checking implementation of UserController interface
@@ -58,5 +59,13 @@ func (c *userControllerImpl) CreateUser(w http.ResponseWriter, r *http.Request) 
 		api.Fail(w, http.StatusBadRequest, "user creation failed", err.Error())
 		return
 	}
-	api.Success(w, http.StatusCreated,userID)
+	api.Success(w, http.StatusCreated, userID)
+}
+
+func (c *userControllerImpl) UpdateUser(w http.ResponseWriter, r *http.Request) {
+	if err := c.userService.UpdateUser(r); err != nil {
+		api.Fail(w, http.StatusInternalServerError, "user updation failed", err.Error())
+		return
+	}
+	api.Success(w, http.StatusOK, "user updated successfully")
 }

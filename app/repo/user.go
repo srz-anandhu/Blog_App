@@ -21,7 +21,7 @@ type User struct {
 
 type UserRepo interface {
 	Create(userReq *dto.UserCreateRequest) (lastInsertedID int64, err error)
-	Update(id int) (err error)
+	Update(userUpdateReq *dto.UserUpdateRequest) (err error)
 	Delete(id int) (err error)
 	GetOne(id int) (result interface{}, err error)
 	GetAll() (results []interface{}, err error)
@@ -68,14 +68,14 @@ func (r *UserRepoImpl) Create(userReq *dto.UserCreateRequest) (lastInsertedID in
 	return lastInsertedID, nil
 }
 
-func (r *UserRepoImpl) Update(id int) (err error) {
+func (r *UserRepoImpl) Update(userUpdateReq *dto.UserUpdateRequest) (err error) {
 	query := `UPDATE` + r.TableName() +
-		`SET username=$1,password=$2,updated_at=$3,updated_by=$4
-			  WHERE id=$5`
+		     `SET username=$1,password=$2,updated_at=$3
+			  WHERE id=$4`
 
-	passwordHash := salthash.HashPassword(user.Password, user.Salt)
+	passwordHash := salthash.HashPassword(userUpdateReq.Password, user.Salt)
 
-	result, err := r.db.Exec(query, user.UserName, passwordHash, time.Now().UTC(), user.UpdatedBy, id)
+	result, err := r.db.Exec(query, userUpdateReq.Username, passwordHash, time.Now().UTC(), userUpdateReq.ID)
 	if err != nil {
 		return fmt.Errorf("query execution failed due to : %w", err)
 	}
@@ -85,7 +85,7 @@ func (r *UserRepoImpl) Update(id int) (err error) {
 		return fmt.Errorf("no affected rows due to : %w", err)
 	}
 	if isAffected == 0 {
-		return fmt.Errorf("no user with ID : %d", id)
+		return fmt.Errorf("no user with ID : %d", userUpdateReq.ID)
 	}
 	return nil
 }
