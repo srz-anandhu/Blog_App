@@ -65,3 +65,34 @@ func (b *BlogCreateRequest) Validate() error {
 	}
 	return nil
 }
+
+type BlogUpdateRequest struct {
+	ID        int    `validate:"required"`
+	Status    int    `validate:"required"` // Update only if status 1 or 2 (drafted or published), 3 is 'deleted'
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	UpdatedBy int    `json:"updated_by"`
+}
+
+func (b *BlogUpdateRequest) Parse(r *http.Request) error {
+	// Get ID from request
+	strID := chi.URLParam(r, "id")
+	intID, err := strconv.Atoi(strID)
+	if err != nil {
+		return err
+	}
+	b.ID = intID
+	// Decode to BlogUpdateRequest
+	if err := json.NewDecoder(r.Body).Decode(b); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (b *BlogUpdateRequest) Validate() error {
+	validate := validator.New()
+	if err := validate.Struct(b); err != nil {
+		return err
+	}
+	return nil
+}

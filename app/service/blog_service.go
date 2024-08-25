@@ -11,6 +11,7 @@ type BlogService interface {
 	GetAllBlogs() (*[]dto.BlogResponse, error)
 	DeleteBlog(r *http.Request) error
 	CreateBlog(r *http.Request) (int64, error)
+	UpdateBlog(r *http.Request) error
 }
 
 type BlogServiceImpl struct {
@@ -121,4 +122,18 @@ func (s *BlogServiceImpl) CreateBlog(r *http.Request) (int64, error) {
 		return 0, err
 	}
 	return blogID, nil
+}
+
+func (s *BlogServiceImpl) UpdateBlog(r *http.Request) error {
+	body := &dto.BlogUpdateRequest{}
+	if err := body.Parse(r); err != nil {
+		return err
+	}
+	if err := body.Validate(); err != nil {
+		return err
+	}
+	if err := s.blogRepo.Update(body); err != nil {
+		return err
+	}
+	return nil
 }
