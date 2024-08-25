@@ -16,8 +16,8 @@ type Author struct {
 }
 
 type AuthorRepo interface {
-	Create(author *dto.AuthorCreateRequest) (lastInsertedID int64, err error)
-	Update(id int) (err error)
+	Create(authorReq *dto.AuthorCreateRequest) (lastInsertedID int64, err error)
+	Update(authorUpdateReq *dto.AuthorUpdateRequest) (err error)
 	Delete(id int) (err error)
 	GetOne(id int) (result interface{}, err error)
 	GetAll() (results []interface{}, err error)
@@ -42,25 +42,24 @@ func (r *AuthorRepoImpl) TableName() string {
 	return " authors "
 }
 
-func (r *AuthorRepoImpl) Create(author *dto.AuthorCreateRequest) (lastInsertedID int64, err error) {
+func (r *AuthorRepoImpl) Create(authorReq *dto.AuthorCreateRequest) (lastInsertedID int64, err error) {
 
 	query := `INSERT INTO` + r.TableName() + `(name,created_by)
 			  VALUES ($1,$2)
 			  RETURNING id`
 
-	if err := r.db.QueryRow(query, author.Name, author.CreatedBy).Scan(&lastInsertedID); err != nil {
+	if err := r.db.QueryRow(query, authorReq.Name, authorReq.CreatedBy).Scan(&lastInsertedID); err != nil {
 		return 0, fmt.Errorf("couldn't get last inserted id due to: %w", err)
 	}
 	return lastInsertedID, nil
 }
 
-func (r *AuthorRepoImpl) Update(id int) (err error) {
+func (r *AuthorRepoImpl) Update(authorUpdateReq *dto.AuthorUpdateRequest) (err error) {
 	query := `UPDATE` + r.TableName() +
-		`SET name=$1,updated_at=$2,updated_by=$3
+			 `SET name=$1,updated_at=$2,updated_by=$3
 			  WHERE id=$4`
 
-	var author Author
-	result, err := r.db.Exec(query, author.Name, time.Now().UTC(), author.UpdatedBy, id)
+	result, err := r.db.Exec(query, authorUpdateReq.Name, time.Now().UTC(), authorUpdateReq.UpdatedBy, authorUpdateReq.ID)
 	if err != nil {
 		return fmt.Errorf("update query failed due to : %w", err)
 	}
@@ -69,7 +68,7 @@ func (r *AuthorRepoImpl) Update(id int) (err error) {
 		return fmt.Errorf("no affected rows due to : %w", err)
 	}
 	if isAffected == 0 {
-		return fmt.Errorf("no user with ID : %d ", author.ID)
+		return fmt.Errorf("no user with ID : %d ", authorUpdateReq.ID)
 	}
 	return nil
 }
@@ -87,19 +86,19 @@ func (r *AuthorRepoImpl) Delete(id int) (err error) {
 }
 
 func (r *AuthorRepoImpl) GetOne(id int) (result interface{}, err error) {
-	query := `SELECT id,name,created_at,updated_at,created_by,deleted_at
+	query := `SELECT id,name,created_at,created_by,updated_at,updated_by,deleted_at
 			  FROM` + r.TableName() +
 		`WHERE id=$1`
 
 	var author Author
-	if err := r.db.QueryRow(query, id).Scan(&author.ID, &author.Name, &author.CreatedAt, &author.UpdatedAt, &author.CreatedBy, &author.DeletedAt); err != nil {
+	if err := r.db.QueryRow(query, id).Scan(&author.ID, &author.Name, &author.CreatedAt, &author.CreatedBy, &author.UpdatedAt, &author.UpdatedBy, &author.DeletedAt); err != nil {
 		return nil, fmt.Errorf("query failed due to : %w", err)
 	}
 	return author, nil
 }
 
 func (r *AuthorRepoImpl) GetAll() (results []interface{}, err error) {
-	query := `SELECT id,name,created_at,created_by,updated_at
+	query := `SELECT id,name,created_at,created_by,updated_at,updated_by
 	         FROM ` + r.TableName() + ``
 
 	rows, err := r.db.Query(query)
@@ -111,7 +110,7 @@ func (r *AuthorRepoImpl) GetAll() (results []interface{}, err error) {
 	for rows.Next() {
 		var author Author
 
-		if err := rows.Scan(&author.ID, &author.Name, &author.CreatedAt, &author.CreatedBy, &author.UpdatedAt); err != nil {
+		if err := rows.Scan(&author.ID, &author.Name, &author.CreatedAt, &author.CreatedBy, &author.UpdatedAt, &author.UpdatedBy); err != nil {
 			return nil, fmt.Errorf("row scan failed due to : %w", err)
 		}
 		results = append(results, author)

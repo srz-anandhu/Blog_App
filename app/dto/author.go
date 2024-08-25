@@ -61,3 +61,32 @@ func (a *AuthorCreateRequest) Validate() error {
 	}
 	return nil
 }
+
+type AuthorUpdateRequest struct {
+	ID        int    `validate:"required"`
+	Name      string `json:"name"`
+	UpdatedBy int    `json:"updated_by"`
+}
+
+func (a *AuthorUpdateRequest) Parse(r *http.Request) error {
+	// Get ID from request
+	strID := chi.URLParam(r, "id")
+	intID, err := strconv.Atoi(strID)
+	if err != nil {
+		return err
+	}
+	a.ID = intID
+	// Decode to AuthorUpdateRequest
+	if err := json.NewDecoder(r.Body).Decode(a); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *AuthorUpdateRequest) Validate() error {
+	validate := validator.New()
+	if err := validate.Struct(a); err != nil {
+		return err
+	}
+	return nil
+}

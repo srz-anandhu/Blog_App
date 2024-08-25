@@ -11,6 +11,7 @@ type AuthorService interface {
 	GetAuthors() (*[]dto.AuthorResponse, error)
 	DeleteAuthor(r *http.Request) error
 	CreateAuthor(r *http.Request) (int64, error)
+	UpdateAuthor(r *http.Request) error
 }
 
 var _ AuthorService = (*AuthorServiceImpl)(nil)
@@ -52,6 +53,7 @@ func (s *AuthorServiceImpl) GetAuthor(r *http.Request) (*dto.AuthorResponse, err
 	authorResp.CreatedAt = a.CreatedAt
 	authorResp.CreatedBy = a.CreatedBy
 	authorResp.UpdatedAt = a.UpdatedAt
+	authorResp.UpdatedBy = a.UpdatedBy
 	authorResp.DeletedAt = a.DeletedAt
 
 	return &authorResp, nil
@@ -76,6 +78,7 @@ func (s *AuthorServiceImpl) GetAuthors() (*[]dto.AuthorResponse, error) {
 		author.CreatedAt = a.CreatedAt
 		author.CreatedBy = a.CreatedBy
 		author.UpdatedAt = a.UpdatedAt
+		author.UpdatedBy = a.UpdatedBy
 
 		authors = append(authors, author)
 	}
@@ -111,4 +114,18 @@ func (s *AuthorServiceImpl) CreateAuthor(r *http.Request) (int64, error) {
 		return 0, err
 	}
 	return authorID, nil
+}
+
+func (s *AuthorServiceImpl) UpdateAuthor(r *http.Request) error {
+	body := &dto.AuthorUpdateRequest{}
+	if err := body.Parse(r); err != nil {
+		return err
+	}
+	if err := body.Validate(); err != nil {
+		return err
+	}
+	if err := s.authorRepo.Update(body); err != nil {
+		return err
+	}
+	return nil
 }
