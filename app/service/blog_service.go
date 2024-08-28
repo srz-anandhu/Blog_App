@@ -3,6 +3,7 @@ package service
 import (
 	"blog/app/dto"
 	"blog/app/repo"
+	"blog/pkg/e"
 	"net/http"
 )
 
@@ -39,7 +40,7 @@ func (s *BlogServiceImpl) GetBlog(r *http.Request) (*dto.BlogResponse, error) {
 	// Calling GetOne function from repo
 	result, err := s.blogRepo.GetOne(req.ID)
 	if err != nil {
-		return nil, err
+		return nil, e.NewError(e.ErrInvalidRequestGetAuthor, "fadsaf", err)
 	}
 	// type assertion
 	b, ok := result.(repo.Blog)

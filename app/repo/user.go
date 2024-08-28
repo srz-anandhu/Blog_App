@@ -61,7 +61,7 @@ func (r *UserRepoImpl) Create(userReq *dto.UserCreateRequest) (lastInsertedID in
 			  VALUES ($1,$2,$3)
 			  RETURNING id`
 
-	if err := r.db.QueryRow(query, userReq.UserName, PasswordString,salt).Scan(&lastInsertedID); err != nil {
+	if err := r.db.QueryRow(query, userReq.UserName, PasswordString, salt).Scan(&lastInsertedID); err != nil {
 		return 0, fmt.Errorf("query execution failed due to : %w", err)
 	}
 
@@ -70,7 +70,7 @@ func (r *UserRepoImpl) Create(userReq *dto.UserCreateRequest) (lastInsertedID in
 
 func (r *UserRepoImpl) Update(userUpdateReq *dto.UserUpdateRequest) (err error) {
 	query := `UPDATE` + r.TableName() +
-		     `SET username=$1,password=$2,updated_at=$3
+		`SET username=$1,password=$2,updated_at=$3
 			  WHERE id=$4`
 
 	passwordHash := salthash.HashPassword(userUpdateReq.Password, user.Salt)

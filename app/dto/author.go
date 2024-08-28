@@ -44,7 +44,7 @@ func (a *AuthorRequest) Validate() error {
 // For Body param
 type AuthorCreateRequest struct {
 	Name      string `json:"name"`
-	CreatedBy int    `json:"created_by"` // User.ID
+	CreatedBy int    `json:"created_by" validate:"required"` // User.ID
 }
 
 func (a *AuthorCreateRequest) Parse(r *http.Request) error {
@@ -65,7 +65,7 @@ func (a *AuthorCreateRequest) Validate() error {
 type AuthorUpdateRequest struct {
 	ID        int    `validate:"required"`
 	Name      string `json:"name"`
-	UpdatedBy int    `json:"updated_by"`
+	UpdatedBy int    `json:"updated_by" validate:"required"`
 }
 
 func (a *AuthorUpdateRequest) Parse(r *http.Request) error {

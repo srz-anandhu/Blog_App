@@ -1,56 +1,63 @@
 package e
 
-import "errors"
+import (
+	"net/http"
+	"strconv"
+)
 
-// HttpError : custom http error object used in controller layer
-type HttpError struct {
-	Status  int
-	Code    int
-	Message string
-	Details string
-}
-
-type WrapError interface {
-	Code() int
-	Error() string
-	Message() string
-}
-
-type WrapErrorImpl struct {
+type WrapError struct {
 	ErrorCode int
 	Msg       string
 	RootCause error
 }
 
-// Code implements WrapError
-func (e *WrapErrorImpl) Code() int {
-	return e.ErrorCode
+type HttpError struct {
+	StatusCode int
+	Code       int
+	Message    string
 }
 
-// Error implements WrapError
-func (e *WrapErrorImpl) Error() string {
+func (e *WrapError) Error() string {
 	return e.RootCause.Error()
 }
 
-// Message implements WrapError
-func (e *WrapErrorImpl) Message() string {
-	return e.Msg
+func NewError(errCode int, msg string, rootCause error) *WrapError {
+	err := &WrapError{
+		ErrorCode: errCode,
+		Msg:       msg,
+		RootCause: rootCause,
+	}
+	return err
 }
 
-// NewError : create a new error instance
-func NewError(code int, msg string, rootCause ...error) WrapError {
-	errCodeMsg := GetErrorMsg(code)
-	if msg == "" {
-		msg = errCodeMsg
+// NewAPIError :
+func NewAPIError(err error, msg string) *HttpError {
+	if err == nil {
+		return nil
 	}
-	newErr := &WrapErrorImpl{
-		ErrorCode: code,
-		Msg:       msg,
-	}
-	if len(rootCause) > 0 {
-		newErr.RootCause = rootCause[0]
+	appErr, ok := err.(*WrapError)
+	if ok {
+		appErr.Msg = msg
 	} else {
-		newErr.RootCause = errors.New(msg)
+		return nil
 	}
-	return newErr
+
+	httpErr := &HttpError{
+		StatusCode: GetHttpStatusCode(appErr.ErrorCode),
+		Code:       appErr.ErrorCode,
+		Message:    msg,
+	}
+	return httpErr
+}
+
+// GetHttpStatusCode used to get Status code from code provided
+func GetHttpStatusCode(c int) int {
+	str := strconv.Itoa(c)
+	code := str[:3]
+
+	r, _ := strconv.Atoi(code)
+	if r < 100 || r >= 600 {
+		return http.StatusInternalServerError
+	}
+	return r
 }

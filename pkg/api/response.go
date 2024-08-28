@@ -60,17 +60,17 @@ func Success(w http.ResponseWriter, status int, result interface{}) {
 }
 
 // Fail ends an unsuccessful JSON response with the standared failure format
-func Fail(w http.ResponseWriter, errCode int, msg string, details ...string) {
+func Fail(w http.ResponseWriter, status, errCode int, msg string, details ...string) {
 	r := &Response{
 		Status: StatusFail,
 		Error: &ResponseError{
-			Code: errCode,
+			Code:    errCode,
 			Message: msg,
 			Details: details,
 		},
 	}
 	respJson, err := json.Marshal(r)
-	if err != nil{
+	if err != nil {
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),
@@ -78,7 +78,7 @@ func Fail(w http.ResponseWriter, errCode int, msg string, details ...string) {
 		)
 		return
 	}
-	w.Header().Set("Content-Type","application/json")
-	w.WriteHeader(errCode)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
 	w.Write(respJson)
 }

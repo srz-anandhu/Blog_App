@@ -46,9 +46,9 @@ func (b *BlogRequest) Validate() error {
 type BlogCreateRequest struct {
 	Title     string `json:"title"`
 	Content   string `json:"content"`
-	AuthorID  int    `json:"author_id"` // Author.ID
+	AuthorID  int    `json:"author_id" validate:"required"` // Author.ID
 	Status    int    `json:"status"`
-	CreatedBy int    `json:"created_by"` // User.ID
+	CreatedBy int    `json:"created_by" validate:"required"` // User.ID
 }
 
 func (b *BlogCreateRequest) Parse(r *http.Request) error {
@@ -71,7 +71,7 @@ type BlogUpdateRequest struct {
 	Status    int    `validate:"required"` // Update only if status 1 or 2 (drafted or published), 3 is 'deleted'
 	Title     string `json:"title"`
 	Content   string `json:"content"`
-	UpdatedBy int    `json:"updated_by"`
+	UpdatedBy int    `json:"updated_by" validate:"required"`
 }
 
 func (b *BlogUpdateRequest) Parse(r *http.Request) error {

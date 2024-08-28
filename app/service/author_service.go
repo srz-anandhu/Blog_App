@@ -3,6 +3,7 @@ package service
 import (
 	"blog/app/dto"
 	"blog/app/repo"
+	"blog/pkg/e"
 	"net/http"
 )
 
@@ -30,11 +31,11 @@ func (s *AuthorServiceImpl) GetAuthor(r *http.Request) (*dto.AuthorResponse, err
 
 	req := &dto.AuthorRequest{}
 	if err := req.Parse(r); err != nil {
-		return nil, err
+		return nil, e.NewError(e.ErrInvalidRequestGetAuthor, "author request parse error", err)
 	}
 
 	if err := req.Validate(); err != nil {
-		return nil, err
+		return nil, e.NewError(e.ErrValidateRequestGetAuthor, "author request validate error", err)
 	}
 	result, err := s.authorRepo.GetOne(req.ID)
 	if err != nil {
@@ -101,10 +102,15 @@ func (s *AuthorServiceImpl) DeleteAuthor(r *http.Request) error {
 }
 
 func (s *AuthorServiceImpl) CreateAuthor(r *http.Request) (int64, error) {
+
+	// Creating instance of dto.AuthorCreateRequest
 	body := &dto.AuthorCreateRequest{}
+
+	// Decode to dto.AuthorCreateRequest
 	if err := body.Parse(r); err != nil {
 		return 0, err
 	}
+	// Validating dto.AuthorCreateRequest
 	if err := body.Validate(); err != nil {
 		return 0, err
 	}
@@ -117,10 +123,15 @@ func (s *AuthorServiceImpl) CreateAuthor(r *http.Request) (int64, error) {
 }
 
 func (s *AuthorServiceImpl) UpdateAuthor(r *http.Request) error {
+
+	// Creating instance of dto.AuthorUpdateRequest
 	body := &dto.AuthorUpdateRequest{}
+
+	// Decode to dto.AuthorUpdateRequest
 	if err := body.Parse(r); err != nil {
 		return err
 	}
+	// Validating dto.AuthorUpdateRequest
 	if err := body.Validate(); err != nil {
 		return err
 	}
