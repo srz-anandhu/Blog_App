@@ -2,9 +2,25 @@ package e
 
 // 400 errors
 const (
-	// ErrInvalidRequestGetAuthor : when path param is invalid for get single author
-	ErrInvalidRequestGetAuthor = 400001 + iota
+	// ErrInvalidRequest : when post body, query param, or path param is invalid or
+	// any post body validation error is encountered
+	ErrInvalidRequest = 400001 + iota
 
-	// ErrValidateRequestGetAuthor : when validate AuthorRequest struct
-	ErrValidateRequestGetAuthor 
+	// ErrValidateRequest : error when validating the request
+	ErrValidateRequest
+
+	// ErrDecodeRequestBody : error when decode the request body
+	ErrDecodeRequestBody
+)
+
+// 404 errors
+const (
+	// ErrResourceNotFound : When no records corresponding to the request is found in the DB
+	ErrResourceNotFound = 404001 
+)
+
+// 500 errors
+const (
+	// ErrInternalServer : unexpected error 
+	ErrInternalServer = 500001
 )

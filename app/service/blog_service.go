@@ -32,35 +32,31 @@ func (s *BlogServiceImpl) GetBlog(r *http.Request) (*dto.BlogResponse, error) {
 
 	req := &dto.BlogRequest{}
 	if err := req.Parse(r); err != nil {
-		return nil, err
+		return nil, e.NewError(e.ErrInvalidRequest, "blog request parse error", err)
 	}
 	if err := req.Validate(); err != nil {
-		return nil, err
+		return nil, e.NewError(e.ErrValidateRequest, "blog request validate error", err)
 	}
 	// Calling GetOne function from repo
 	result, err := s.blogRepo.GetOne(req.ID)
 	if err != nil {
-		return nil, e.NewError(e.ErrInvalidRequestGetAuthor, "fadsaf", err)
+		return nil, e.NewError(e.ErrResourceNotFound, "not found blog with requested id", err)
 	}
-	// type assertion
-	b, ok := result.(repo.Blog)
-	if !ok {
-		return nil, err
-	}
+
 	// Instance of blog response
 	var blog dto.BlogResponse
 
-	blog.ID = b.ID
-	blog.Title = b.Title
-	blog.Content = b.Content
-	blog.AuthorID = b.AuthorID
-	blog.Status = b.Status
-	blog.CreatedBy = b.CreatedBy
-	blog.CreatedAt = b.CreatedAt
-	blog.UpdatedBy = b.UpdatedBy
-	blog.UpdatedAt = b.UpdatedAt
-	blog.DeletedBy = b.DeletedBy
-	blog.DeletedAt = b.DeletedAt
+	blog.ID = result.ID
+	blog.Title = result.Title
+	blog.Content = result.Content
+	blog.AuthorID = result.AuthorID
+	blog.Status = result.Status
+	blog.CreatedBy = result.CreatedBy
+	blog.CreatedAt = result.CreatedAt
+	blog.UpdatedBy = result.UpdatedBy
+	blog.UpdatedAt = result.UpdatedAt
+	blog.DeletedBy = result.DeletedBy
+	blog.DeletedAt = result.DeletedAt
 
 	return &blog, nil
 }
@@ -68,28 +64,25 @@ func (s *BlogServiceImpl) GetBlog(r *http.Request) (*dto.BlogResponse, error) {
 func (s *BlogServiceImpl) GetAllBlogs() (*[]dto.BlogResponse, error) {
 	results, err := s.blogRepo.GetAll()
 	if err != nil {
-		return nil, err
+		return nil, e.NewError(e.ErrInternalServer, "can't get blogs", err)
 	}
 	var blogs []dto.BlogResponse
 
-	for _, val := range results {
-		b, ok := val.(repo.Blog)
-		if !ok {
-			return nil, err
-		}
+	for _, val := range *results {
+
 		var blogResp dto.BlogResponse
 
-		blogResp.ID = b.ID
-		blogResp.Title = b.Title
-		blogResp.Content = b.Content
-		blogResp.AuthorID = b.AuthorID
-		blogResp.Status = b.Status
-		blogResp.CreatedBy = b.CreatedBy
-		blogResp.CreatedAt = b.CreatedAt
-		blogResp.UpdatedBy = b.UpdatedBy
-		blogResp.UpdatedAt = b.UpdatedAt
-		blogResp.DeletedBy = b.DeletedBy
-		blogResp.DeletedAt = b.DeletedAt
+		blogResp.ID = val.ID
+		blogResp.Title = val.Title
+		blogResp.Content = val.Content
+		blogResp.AuthorID = val.AuthorID
+		blogResp.Status = val.Status
+		blogResp.CreatedBy = val.CreatedBy
+		blogResp.CreatedAt = val.CreatedAt
+		blogResp.UpdatedBy = val.UpdatedBy
+		blogResp.UpdatedAt = val.UpdatedAt
+		blogResp.DeletedBy = val.DeletedBy
+		blogResp.DeletedAt = val.DeletedAt
 
 		blogs = append(blogs, blogResp)
 	}

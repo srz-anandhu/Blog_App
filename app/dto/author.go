@@ -33,6 +33,7 @@ func (a *AuthorRequest) Parse(r *http.Request) error {
 	return nil
 }
 
+// Validating author request
 func (a *AuthorRequest) Validate() error {
 	validate := validator.New()
 	if err := validate.Struct(a); err != nil {

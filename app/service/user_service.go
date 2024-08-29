@@ -41,19 +41,14 @@ func (s *UserServiceImpl) GetUser(r *http.Request) (*dto.UserResponse, error) {
 	}
 	var user dto.UserResponse
 
-	u, ok := result.(repo.User)
-	if !ok {
-		return nil, err
-	}
-
-	user.ID = u.ID
-	user.UserName = u.UserName
-	user.Password = u.Password
-	user.Salt = u.Salt
-	user.CreatedAt = u.CreatedAt
-	user.UpdatedAt = u.UpdatedAt
-	user.DeletedAt = u.DeletedAt
-	user.IsDeleted = u.IsDeleted
+	user.ID = result.ID
+	user.UserName = result.UserName
+	user.Password = result.Password
+	user.Salt = result.Salt
+	user.CreatedAt = result.CreatedAt
+	user.UpdatedAt = result.UpdatedAt
+	user.DeletedAt = result.DeletedAt
+	user.IsDeleted = result.IsDeleted
 
 	return &user, nil
 }
@@ -65,21 +60,18 @@ func (s *UserServiceImpl) GetAllUsers() (*[]dto.UserResponse, error) {
 	}
 	var users []dto.UserResponse
 
-	for _, val := range results {
-		u, ok := val.(repo.User)
-		if !ok {
-			return nil, err
-		}
+	for _, val := range *results {
+
 		var user dto.UserResponse
 
-		user.ID = u.ID
-		user.UserName = u.UserName
-		user.Password = u.Password
-		user.Salt = u.Salt
-		user.CreatedAt = u.CreatedAt
-		user.UpdatedAt = u.UpdatedAt
-		user.IsDeleted = u.IsDeleted
-		user.DeletedAt = u.DeletedAt
+		user.ID = val.ID
+		user.UserName = val.UserName
+		user.Password = val.Password
+		user.Salt = val.Salt
+		user.CreatedAt = val.CreatedAt
+		user.UpdatedAt = val.UpdatedAt
+		user.IsDeleted = val.IsDeleted
+		user.DeletedAt = val.DeletedAt
 
 		users = append(users, user)
 	}

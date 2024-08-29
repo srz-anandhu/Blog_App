@@ -30,7 +30,7 @@ func NewError(errCode int, msg string, rootCause error) *WrapError {
 	return err
 }
 
-// NewAPIError :
+// NewAPIError : create http error from NewError
 func NewAPIError(err error, msg string) *HttpError {
 	if err == nil {
 		return nil

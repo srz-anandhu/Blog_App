@@ -23,8 +23,8 @@ type UserRepo interface {
 	Create(userReq *dto.UserCreateRequest) (lastInsertedID int64, err error)
 	Update(userUpdateReq *dto.UserUpdateRequest) (err error)
 	Delete(id int) (err error)
-	GetOne(id int) (result interface{}, err error)
-	GetAll() (results []interface{}, err error)
+	GetOne(id int) (userResp *dto.UserResponse, err error)
+	GetAll() (usersResp *[]dto.UserResponse, err error)
 	TableName() string // Function for reuse/modify table name
 }
 
@@ -103,7 +103,7 @@ func (r *UserRepoImpl) Delete(id int) (err error) {
 	return nil
 }
 
-func (r *UserRepoImpl) GetAll() (results []interface{}, err error) {
+func (r *UserRepoImpl) GetAll() (usersResp *[]dto.UserResponse, err error) {
 	query := `SELECT id,username,password,salt,created_at,updated_at,is_deleted,deleted_at
 	        FROM` + r.TableName() + ``
 
@@ -112,26 +112,28 @@ func (r *UserRepoImpl) GetAll() (results []interface{}, err error) {
 		return nil, fmt.Errorf("query execution failed due to : %w", err)
 	}
 	defer rows.Close()
+	var userCollection []dto.UserResponse
+
 	for rows.Next() {
-		// var user User
+		var user dto.UserResponse
 		if err := rows.Scan(&user.ID, &user.UserName, &user.Password, &user.Salt, &user.CreatedAt, &user.UpdatedAt, &user.IsDeleted, &user.DeletedAt); err != nil {
 			return nil, fmt.Errorf("row scan failed due to : %w", err)
 		}
-		results = append(results, user)
+		userCollection = append(userCollection, user)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, fmt.Errorf("row iteration failed due to : %w", err)
 	}
-	return results, nil
+	return &userCollection, nil
 }
 
-func (r *UserRepoImpl) GetOne(id int) (result interface{}, err error) {
+func (r *UserRepoImpl) GetOne(id int) (userResp *dto.UserResponse, err error) {
 	query := `SELECT id,username,password,salt,created_at,updated_at,is_deleted,deleted_at
 			  FROM` + r.TableName() +
 		`WHERE id=$1`
-	// var user User
-	if err := r.db.QueryRow(query, id).Scan(&user.ID, &user.UserName, &user.Password, &user.Salt, &user.CreatedAt, &user.UpdatedAt, &user.IsDeleted, &user.DeletedAt); err != nil {
+	userResp = &dto.UserResponse{}
+	if err := r.db.QueryRow(query, id).Scan(&userResp.ID, &userResp.UserName, &userResp.Password, &userResp.Salt, &userResp.CreatedAt, &userResp.UpdatedAt, &userResp.IsDeleted, &userResp.DeletedAt); err != nil {
 		return nil, fmt.Errorf("query execution failed due to : %w", err)
 	}
-	return user, nil
+	return userResp, nil
 }

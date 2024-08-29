@@ -31,31 +31,26 @@ func (s *AuthorServiceImpl) GetAuthor(r *http.Request) (*dto.AuthorResponse, err
 
 	req := &dto.AuthorRequest{}
 	if err := req.Parse(r); err != nil {
-		return nil, e.NewError(e.ErrInvalidRequestGetAuthor, "author request parse error", err)
+		return nil, e.NewError(e.ErrInvalidRequest, "author request parse error", err)
 	}
 
 	if err := req.Validate(); err != nil {
-		return nil, e.NewError(e.ErrValidateRequestGetAuthor, "author request validate error", err)
+		return nil, e.NewError(e.ErrValidateRequest, "author request validate error", err)
 	}
 	result, err := s.authorRepo.GetOne(req.ID)
 	if err != nil {
-		return nil, err
-	}
-
-	a, ok := result.(repo.Author)
-	if !ok {
-		return nil, err
+		return nil, e.NewError(e.ErrResourceNotFound, "not found author with requested id", err)
 	}
 
 	var authorResp dto.AuthorResponse
 
-	authorResp.ID = a.ID
-	authorResp.Name = a.Name
-	authorResp.CreatedAt = a.CreatedAt
-	authorResp.CreatedBy = a.CreatedBy
-	authorResp.UpdatedAt = a.UpdatedAt
-	authorResp.UpdatedBy = a.UpdatedBy
-	authorResp.DeletedAt = a.DeletedAt
+	authorResp.ID = result.ID
+	authorResp.Name = result.Name
+	authorResp.CreatedAt = result.CreatedAt
+	authorResp.CreatedBy = result.CreatedBy
+	authorResp.UpdatedAt = result.UpdatedAt
+	authorResp.UpdatedBy = result.UpdatedBy
+	authorResp.DeletedAt = result.DeletedAt
 
 	return &authorResp, nil
 
@@ -65,21 +60,18 @@ func (s *AuthorServiceImpl) GetAuthors() (*[]dto.AuthorResponse, error) {
 
 	results, err := s.authorRepo.GetAll()
 	if err != nil {
-		return nil, err
+		return nil, e.NewError(e.ErrInternalServer, "can't get authors", err)
 	}
 	var authors []dto.AuthorResponse
-	for _, val := range results {
-		a, ok := val.(repo.Author)
-		if !ok {
-			return nil, err
-		}
+	for _, val := range *results {
+
 		var author dto.AuthorResponse
-		author.ID = a.ID
-		author.Name = a.Name
-		author.CreatedAt = a.CreatedAt
-		author.CreatedBy = a.CreatedBy
-		author.UpdatedAt = a.UpdatedAt
-		author.UpdatedBy = a.UpdatedBy
+		author.ID = val.ID
+		author.Name = val.Name
+		author.CreatedAt = val.CreatedAt
+		author.CreatedBy = val.CreatedBy
+		author.UpdatedAt = val.UpdatedAt
+		author.UpdatedBy = val.UpdatedBy
 
 		authors = append(authors, author)
 	}
@@ -90,13 +82,13 @@ func (s *AuthorServiceImpl) GetAuthors() (*[]dto.AuthorResponse, error) {
 func (s *AuthorServiceImpl) DeleteAuthor(r *http.Request) error {
 	req := &dto.AuthorRequest{}
 	if err := req.Parse(r); err != nil {
-		return err
+		return e.NewError(e.ErrInvalidRequest, "author id parse error", err)
 	}
 	if err := req.Validate(); err != nil {
-		return err
+		return e.NewError(e.ErrValidateRequest, "author id validation error", err)
 	}
 	if err := s.authorRepo.Delete(req.ID); err != nil {
-		return err
+		return e.NewError(e.ErrResourceNotFound, "can't delete author", err)
 	}
 	return nil
 }
@@ -108,16 +100,16 @@ func (s *AuthorServiceImpl) CreateAuthor(r *http.Request) (int64, error) {
 
 	// Decode to dto.AuthorCreateRequest
 	if err := body.Parse(r); err != nil {
-		return 0, err
+		return 0, e.NewError(e.ErrDecodeRequestBody, "can't decode author create request", err)
 	}
 	// Validating dto.AuthorCreateRequest
 	if err := body.Validate(); err != nil {
-		return 0, err
+		return 0, e.NewError(e.ErrValidateRequest, "can't validate author create request", err)
 	}
 
 	authorID, err := s.authorRepo.Create(body)
 	if err != nil {
-		return 0, err
+		return 0, e.NewError(e.ErrInternalServer, "can't create author", err)
 	}
 	return authorID, nil
 }
@@ -129,14 +121,14 @@ func (s *AuthorServiceImpl) UpdateAuthor(r *http.Request) error {
 
 	// Decode to dto.AuthorUpdateRequest
 	if err := body.Parse(r); err != nil {
-		return err
+		return e.NewError(e.ErrInternalServer, "can't decode author update request", err)
 	}
 	// Validating dto.AuthorUpdateRequest
 	if err := body.Validate(); err != nil {
-		return err
+		return e.NewError(e.ErrInternalServer, "can't validate author update request", err)
 	}
 	if err := s.authorRepo.Update(body); err != nil {
-		return err
+		return e.NewError(e.ErrInternalServer, "can't update author", err)
 	}
 	return nil
 }
