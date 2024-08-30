@@ -3,6 +3,7 @@ package service
 import (
 	"blog/app/dto"
 	"blog/app/repo"
+	"blog/pkg/e"
 	"net/http"
 )
 
@@ -30,14 +31,14 @@ func NewUserService(userRepo repo.UserRepo) UserService {
 func (s *UserServiceImpl) GetUser(r *http.Request) (*dto.UserResponse, error) {
 	req := &dto.UserRequest{}
 	if err := req.Parse(r); err != nil {
-		return nil, err
+		return nil, e.NewError(e.ErrInvalidRequest, "user id parse error", err)
 	}
 	if err := req.Validate(); err != nil {
-		return nil, err
+		return nil, e.NewError(e.ErrValidateRequest, "user request validate error", err)
 	}
 	result, err := s.userRepo.GetOne(req.ID)
 	if err != nil {
-		return nil, err
+		return nil, e.NewError(e.ErrResourceNotFound, "can't get user", err)
 	}
 	var user dto.UserResponse
 
@@ -56,7 +57,7 @@ func (s *UserServiceImpl) GetUser(r *http.Request) (*dto.UserResponse, error) {
 func (s *UserServiceImpl) GetAllUsers() (*[]dto.UserResponse, error) {
 	results, err := s.userRepo.GetAll()
 	if err != nil {
-		return nil, err
+		return nil, e.NewError(e.ErrInternalServer, "can't get users", err)
 	}
 	var users []dto.UserResponse
 
@@ -81,13 +82,13 @@ func (s *UserServiceImpl) GetAllUsers() (*[]dto.UserResponse, error) {
 func (s *UserServiceImpl) DeleteUser(r *http.Request) error {
 	req := &dto.UserRequest{}
 	if err := req.Parse(r); err != nil {
-		return err
+		return e.NewError(e.ErrInvalidRequest, "user id parse error", err)
 	}
 	if err := req.Validate(); err != nil {
-		return err
+		return e.NewError(e.ErrValidateRequest, "can't validate user request", err)
 	}
 	if err := s.userRepo.Delete(req.ID); err != nil {
-		return err
+		return e.NewError(e.ErrInternalServer, "can't delete user", err)
 	}
 	return nil
 }
@@ -95,14 +96,14 @@ func (s *UserServiceImpl) DeleteUser(r *http.Request) error {
 func (c *UserServiceImpl) CreateUser(r *http.Request) (int64, error) {
 	body := &dto.UserCreateRequest{}
 	if err := body.Parse(r); err != nil {
-		return 0, err
+		return 0, e.NewError(e.ErrDecodeRequestBody, "can't decode user create request", err)
 	}
 	if err := body.Validate(); err != nil {
-		return 0, err
+		return 0, e.NewError(e.ErrValidateRequest, "can't validate user create request", err)
 	}
 	userID, err := c.userRepo.Create(body)
 	if err != nil {
-		return 0, err
+		return 0, e.NewError(e.ErrInternalServer, "can't create user", err)
 	}
 	return userID, nil
 }
@@ -110,13 +111,13 @@ func (c *UserServiceImpl) CreateUser(r *http.Request) (int64, error) {
 func (s *UserServiceImpl) UpdateUser(r *http.Request) error {
 	body := &dto.UserUpdateRequest{}
 	if err := body.Parse(r); err != nil {
-		return err
+		return e.NewError(e.ErrDecodeRequestBody, "can't decode user update request", err)
 	}
 	if err := body.Validate(); err != nil {
-		return err
+		return e.NewError(e.ErrValidateRequest, "can't validate user update request", err)
 	}
 	if err := s.userRepo.Update(body); err != nil {
-		return err
+		return e.NewError(e.ErrInternalServer, "can't update user", err)
 	}
 	return nil
 }

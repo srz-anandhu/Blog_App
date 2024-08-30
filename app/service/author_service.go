@@ -88,7 +88,7 @@ func (s *AuthorServiceImpl) DeleteAuthor(r *http.Request) error {
 		return e.NewError(e.ErrValidateRequest, "author id validation error", err)
 	}
 	if err := s.authorRepo.Delete(req.ID); err != nil {
-		return e.NewError(e.ErrResourceNotFound, "can't delete author", err)
+		return e.NewError(e.ErrInternalServer, "can't delete author", err)
 	}
 	return nil
 }

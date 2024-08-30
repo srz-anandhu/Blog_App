@@ -61,6 +61,7 @@ func Success(w http.ResponseWriter, status int, result interface{}) {
 
 // Fail ends an unsuccessful JSON response with the standared failure format
 func Fail(w http.ResponseWriter, status, errCode int, msg string, details ...string) {
+	// Give error response to client
 	r := &Response{
 		Status: StatusFail,
 		Error: &ResponseError{

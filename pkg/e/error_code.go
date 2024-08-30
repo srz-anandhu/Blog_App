@@ -2,8 +2,7 @@ package e
 
 // 400 errors
 const (
-	// ErrInvalidRequest : when post body, query param, or path param is invalid or
-	// any post body validation error is encountered
+	// ErrInvalidRequest : when post body, query param, or path param is invalid 
 	ErrInvalidRequest = 400001 + iota
 
 	// ErrValidateRequest : error when validating the request

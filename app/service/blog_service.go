@@ -92,13 +92,14 @@ func (s *BlogServiceImpl) GetAllBlogs() (*[]dto.BlogResponse, error) {
 func (s *BlogServiceImpl) DeleteBlog(r *http.Request) error {
 	req := &dto.AuthorRequest{}
 	if err := req.Parse(r); err != nil {
-		return err
+		return e.NewError(e.ErrInvalidRequest, "blog id parse error", err)
 	}
 	if err := req.Validate(); err != nil {
-		return err
+		return e.NewError(e.ErrValidateRequest, "blog id validation error", err)
 	}
+
 	if err := s.blogRepo.Delete(req.ID); err != nil {
-		return err
+		return e.NewError(e.ErrInternalServer, "can't delete blog", err)
 	}
 	return nil
 }
@@ -106,14 +107,14 @@ func (s *BlogServiceImpl) DeleteBlog(r *http.Request) error {
 func (s *BlogServiceImpl) CreateBlog(r *http.Request) (int64, error) {
 	body := &dto.BlogCreateRequest{}
 	if err := body.Parse(r); err != nil {
-		return 0, err
+		return 0, e.NewError(e.ErrDecodeRequestBody, "can't decode blog create request", err)
 	}
 	if err := body.Validate(); err != nil {
-		return 0, err
+		return 0, e.NewError(e.ErrValidateRequest, "can't validate blog create request", err)
 	}
 	blogID, err := s.blogRepo.Create(body)
 	if err != nil {
-		return 0, err
+		return 0, e.NewError(e.ErrInternalServer, "can't create blog", err)
 	}
 	return blogID, nil
 }
@@ -121,13 +122,13 @@ func (s *BlogServiceImpl) CreateBlog(r *http.Request) (int64, error) {
 func (s *BlogServiceImpl) UpdateBlog(r *http.Request) error {
 	body := &dto.BlogUpdateRequest{}
 	if err := body.Parse(r); err != nil {
-		return err
+		return e.NewError(e.ErrDecodeRequestBody, "can't decode blog update request", err)
 	}
 	if err := body.Validate(); err != nil {
-		return err
+		return e.NewError(e.ErrValidateRequest, "can't validate blog update request", err)
 	}
 	if err := s.blogRepo.Update(body); err != nil {
-		return err
+		return e.NewError(e.ErrInternalServer, "can't update blog", err)
 	}
 	return nil
 }
