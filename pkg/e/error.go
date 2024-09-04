@@ -21,7 +21,7 @@ func (e *WrapError) Error() string {
 	return e.RootCause.Error()
 }
 
-// NewError : create a new error instance and get rootcause error and return as WrapError.
+// NewError : create a new error instance, get rootcause error and return as WrapError.
 func NewError(errCode int, msg string, rootCause error) *WrapError {
 	err := &WrapError{
 		ErrorCode: errCode,
