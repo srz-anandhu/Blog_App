@@ -90,15 +90,15 @@ func (s *BlogServiceImpl) GetAllBlogs() (*[]dto.BlogResponse, error) {
 }
 
 func (s *BlogServiceImpl) DeleteBlog(r *http.Request) error {
-	req := &dto.AuthorRequest{}
-	if err := req.Parse(r); err != nil {
+	body := &dto.BlogDeleteRequest{}
+	if err := body.Parse(r); err != nil {
 		return e.NewError(e.ErrInvalidRequest, "blog id parse error", err)
 	}
-	if err := req.Validate(); err != nil {
+	if err := body.Validate(); err != nil {
 		return e.NewError(e.ErrValidateRequest, "blog id validation error", err)
 	}
 
-	if err := s.blogRepo.Delete(req.ID); err != nil {
+	if err := s.blogRepo.Delete(body); err != nil {
 		return e.NewError(e.ErrInternalServer, "can't delete blog", err)
 	}
 	return nil

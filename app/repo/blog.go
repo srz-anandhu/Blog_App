@@ -21,7 +21,7 @@ type Blog struct {
 type BlogRepo interface {
 	Create(blogReq *dto.BlogCreateRequest) (lastInsertedID int64, err error)
 	Update(blogUpdateReq *dto.BlogUpdateRequest) (err error)
-	Delete(id int) (err error)
+	Delete(blogDeleteReq *dto.BlogDeleteRequest) (err error)
 	GetOne(id int) (blogResp *dto.BlogResponse, err error)
 	GetAll() (blogsResp *[]dto.BlogResponse, err error)
 	TableName() string // Function for reuse/modify table name
@@ -80,12 +80,12 @@ func (r *BlogRepoImpl) Update(blogUpdateReq *dto.BlogUpdateRequest) (err error) 
 }
 
 // Soft Delete
-func (r *BlogRepoImpl) Delete(id int) (err error) {
+func (r *BlogRepoImpl) Delete(blogDeleteReq *dto.BlogDeleteRequest) (err error) {
 	query := `UPDATE` + r.TableName() +
 		`SET deleted_by=$1,deleted_at=$2,status=$3
 	WHERE id=$4`
-	var blog Blog
-	_, err = r.db.Exec(query, blog.DeletedBy, time.Now().UTC(), 3, id)
+	//var blog Blog
+	_, err = r.db.Exec(query, blogDeleteReq.DeletedBy, time.Now().UTC(), 3, blogDeleteReq.ID)
 	if err != nil {
 		return fmt.Errorf("delete query execution failed due to: %w", err)
 	}
