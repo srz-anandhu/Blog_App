@@ -121,11 +121,11 @@ func (s *AuthorServiceImpl) UpdateAuthor(r *http.Request) error {
 
 	// Decode to dto.AuthorUpdateRequest
 	if err := body.Parse(r); err != nil {
-		return e.NewError(e.ErrInternalServer, "can't decode author update request", err)
+		return e.NewError(e.ErrDecodeRequestBody, "can't decode author update request", err)
 	}
 	// Validating dto.AuthorUpdateRequest
 	if err := body.Validate(); err != nil {
-		return e.NewError(e.ErrInternalServer, "can't validate author update request", err)
+		return e.NewError(e.ErrValidateRequest, "can't validate author update request", err)
 	}
 	if err := s.authorRepo.Update(body); err != nil {
 		return e.NewError(e.ErrInternalServer, "can't update author", err)

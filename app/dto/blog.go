@@ -103,6 +103,13 @@ func (b *BlogUpdateRequest) Validate() error {
 }
 
 func (b *BlogDeleteRequest) Parse(r *http.Request) error {
+	strID := chi.URLParam(r, "id")
+	intID, err := strconv.Atoi(strID)
+	if err != nil {
+		return err
+	}
+	b.ID = intID
+	
 	if err := json.NewDecoder(r.Body).Decode(b); err != nil {
 		return err
 	}
