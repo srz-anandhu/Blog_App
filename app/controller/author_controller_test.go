@@ -96,14 +96,14 @@ func TestDeleteAuthor(t *testing.T) {
 
 		// error case
 		{
-			name: "error case",
+			name:   "error case",
 			status: 500,
 			error: &e.WrapError{
 				ErrorCode: 500,
-				Msg: "Internal server error",
+				Msg:       "Internal server error",
 				RootCause: errors.New("Internal server error"),
 			},
-			want: `{"status":"not ok","error":{"code":500,"message":"author deletion failed","details":["Internal server error"]}}`,
+			want:    `{"status":"not ok","error":{"code":500,"message":"author deletion failed","details":["Internal server error"]}}`,
 			wantErr: true,
 		},
 	}
@@ -114,6 +114,59 @@ func TestDeleteAuthor(t *testing.T) {
 			res := httptest.NewRecorder()
 			authorMock.On("DeleteAuthor", req).Once().Return(test.error)
 			conn.DeleteAuthor(res, req)
+
+			assert.Equal(t, test.want, res.Body.String())
+			assert.Equal(t, test.status, res.Code)
+		})
+	}
+}
+
+func TestCreateAuthor(t *testing.T) {
+	authorMock := new(mocks.AuthorService)
+	conn := NewAuthorController(authorMock)
+
+	tests := []struct {
+		name         string
+		status       int
+		authorCreate *dto.AuthorCreateRequest
+		authorID     int64
+		want         string
+		err          error
+		wantErr      bool
+	}{
+		// success case
+		{
+			name:   "author creation success case",
+			status: 201,
+			authorCreate: &dto.AuthorCreateRequest{
+				Name:      "newauthorname",
+				CreatedBy: 1, // User ID
+			},
+			authorID: 2,
+			want:     `{"status":"ok","result":2}`,
+			err:      nil,
+			wantErr:  false,
+		},
+		// error case
+		{
+			name: "author creation error case",
+			status: 500,
+			err : &e.WrapError{
+				ErrorCode: 500,
+				Msg: "failed to create author",
+				RootCause: errors.New("Internal server error"),
+			},
+			want: `{"status":"not ok","error":{"code":500,"message":"failed to create author","details":["Internal server error"]}}`,
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			req := httptest.NewRequest("POST", "/create", nil)
+			res := httptest.NewRecorder()
+			authorMock.On("CreateAuthor", req).Once().Return(test.authorID, test.err)
+			conn.CreateAuthor(res, req)
 
 			assert.Equal(t, test.want, res.Body.String())
 			assert.Equal(t, test.status, res.Code)
