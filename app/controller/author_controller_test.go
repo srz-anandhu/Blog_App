@@ -82,7 +82,7 @@ func TestDeleteAuthor(t *testing.T) {
 		name    string
 		status  int
 		want    string
-		error   error
+		err   error
 		wantErr bool
 	}{
 		// success case
@@ -90,7 +90,7 @@ func TestDeleteAuthor(t *testing.T) {
 			name:    "delete author success case",
 			status:  200,
 			want:    `{"status":"ok","result":"Deleted author successfully"}`,
-			error:   nil,
+			err:   nil,
 			wantErr: false,
 		},
 
@@ -98,7 +98,7 @@ func TestDeleteAuthor(t *testing.T) {
 		{
 			name:   "error case",
 			status: 500,
-			error: &e.WrapError{
+			err: &e.WrapError{
 				ErrorCode: 500,
 				Msg:       "Internal server error",
 				RootCause: errors.New("Internal server error"),
@@ -112,7 +112,7 @@ func TestDeleteAuthor(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			req := httptest.NewRequest("DELETE", "/1", nil)
 			res := httptest.NewRecorder()
-			authorMock.On("DeleteAuthor", req).Once().Return(test.error)
+			authorMock.On("DeleteAuthor", req).Once().Return(test.err)
 			conn.DeleteAuthor(res, req)
 
 			assert.Equal(t, test.want, res.Body.String())
@@ -188,6 +188,7 @@ func TestGetAllAuthors(t *testing.T) {
 		err     error
 		wantErr bool
 	}{
+		// success case
 		{
 			name:   "Get all authors success case",
 			status: 200,
@@ -235,11 +236,22 @@ func TestGetAllAuthors(t *testing.T) {
 					},
 				},
 			},
-			want:    `{"status":"ok","result":[{"id":1,"name":"author name1","updated_at":"2024-07-15T00:00:00Z","created_at":"2024-07-15T00:00:00Z","deleted_at":"2024-07-15T00:00:00Z"},
-					  {"id":2,"name":"author name2","updated_at":"2024-07-15T00:00:00Z","created_at":"2024-07-15T00:00:00Z","deleted_at":"2024-07-15T00:00:00Z"},
-					  {"id":3,"name":"author name3","updated_at":"2024-07-15T00:00:00Z","created_at":"2024-07-15T00:00:00Z","deleted_at":"2024-07-15T00:00:00Z"}]}`,
+			want:    `{"status":"ok","result":[{"id":1,"name":"author name1","updated_at":"2024-07-15T00:00:00Z","created_at":"2024-07-15T00:00:00Z","deleted_at":"2024-07-15T00:00:00Z"},{"id":2,"name":"author name2","updated_at":"2024-07-15T00:00:00Z","created_at":"2024-07-15T00:00:00Z","deleted_at":"2024-07-15T00:00:00Z"},{"id":3,"name":"author name3","updated_at":"2024-07-15T00:00:00Z","created_at":"2024-07-15T00:00:00Z","deleted_at":"2024-07-15T00:00:00Z"}]}`,
 			err:     nil,
 			wantErr: false,
+		},
+
+		// error case
+		{
+			name: "Get all authors error case",
+			status: 500,
+			want: `{"status":"not ok","error":{"code":500,"message":"can't get all authors","details":["Internal server error"]}}`,
+			err: &e.WrapError{
+				ErrorCode: 500,
+				Msg: "can't get all authors",
+				RootCause: errors.New("Internal server error"),
+			},
+			wantErr: true,
 		},
 	}
 
