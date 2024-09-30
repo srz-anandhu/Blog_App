@@ -268,3 +268,54 @@ func TestGetAllAuthors(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateAuthor(t *testing.T) {
+	authorMock := new(mocks.AuthorService)
+	conn := NewAuthorController(authorMock)
+
+	tests := []struct{
+		name string
+		status int
+		want string
+		authorUpdate dto.AuthorUpdateRequest
+		err error
+		wantErr bool
+	}{
+		{
+			name: "update author success case",
+			status: 200,
+			want: `{"status":"ok","result":"Author updated successfully"}`,
+			authorUpdate: dto.AuthorUpdateRequest{
+				ID: 2,
+				Name: "smartRabbitz",
+				UpdatedBy: 3,
+			},
+			err: nil,
+			wantErr: false,
+		},
+		{
+			name: "update author error case",
+			status: 500,
+			want: `{"status":"not ok","error":{"code":500,"message":"can't update author","details":["Internal server error"]}}`,
+			err: &e.WrapError{
+				ErrorCode: 500,
+				Msg: "can't update author",
+				RootCause: errors.New("Internal server error"),
+			},
+			wantErr: true,
+		}, 
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			req := httptest.NewRequest("PUT", "/2", nil)
+			res := httptest.NewRecorder()
+
+			authorMock.On("UpdateAuthor", req).Once().Return(test.err)
+			conn.UpdateAuthor(res, req)
+
+			assert.Equal(t, test.want, res.Body.String())
+			assert.Equal(t, test.status, res.Code)
+		})
+	}
+}
