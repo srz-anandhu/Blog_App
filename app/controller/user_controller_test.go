@@ -3,6 +3,8 @@ package controller
 import (
 	"blog/app/dto"
 	"blog/app/service/mocks"
+	"blog/pkg/e"
+	"errors"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -47,8 +49,19 @@ func TestGetUser(t *testing.T) {
 					DeletedBy: nil,
 				},
 			},
-			err: nil,
+			err:     nil,
 			wantErr: false,
+		},
+		{
+			name:   "get user error case",
+			status: 400,
+			want:   `{"status":"not ok","error":{"code":400,"message":"can't get user","details":["Bad Request"]}}`,
+			err:    &e.WrapError{
+				ErrorCode: 400,
+				Msg: "can't get user",
+				RootCause: errors.New("Bad Request"),
+			},
+			wantErr: true,
 		},
 	}
 
