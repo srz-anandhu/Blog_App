@@ -78,3 +78,48 @@ func TestGetUser(t *testing.T) {
 		})
 	}
 }
+
+
+func TestCreateUser(t *testing.T) {
+	userMock := new(mocks.UserService)
+	conn := NewUserController(userMock)
+
+	tests := []struct{
+		name string
+		status int
+		want string
+		userCreate *dto.UserCreateRequest
+		userID int64
+		err error
+		wantErr bool
+	}{
+		{
+			name: "create user success case",
+			status: 201,
+			want: `{"status":"ok","result":7}`,
+			userCreate: &dto.UserCreateRequest{
+				UserName: "demouser name",
+				Password: "demouser password",
+			},
+			userID: 7,
+			err: nil,
+			wantErr: false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			req := httptest.NewRequest("POST", "/create", nil)
+			res := httptest.NewRecorder()
+
+			// calling service layer function
+			userMock.On("CreateUser", req).Once().Return(test.userID, test.err)
+			// calling controller layer function
+			conn.CreateUser(res, req)
+			// checking wanted data with response
+			assert.Equal(t, test.want, res.Body.String())
+			// checking status code with response code
+			assert.Equal(t, test.status, res.Code)
+		})
+	}
+}

@@ -66,7 +66,9 @@ func TestGetAuthor(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			req := httptest.NewRequest("GET", "/1", nil)
 			res := httptest.NewRecorder()
+			// calling "GetAuthor" function from author service
 			authorMock.On("GetAuthor", req).Once().Return(test.author, test.error)
+			// calling "GetAuthor" function from author controller
 			conn.GetAuthor(res, req)
 
 			assert.Equal(t, test.status, res.Code)
