@@ -56,9 +56,9 @@ func TestGetUser(t *testing.T) {
 			name:   "get user error case",
 			status: 400,
 			want:   `{"status":"not ok","error":{"code":400,"message":"can't get user","details":["Bad Request"]}}`,
-			err:    &e.WrapError{
+			err: &e.WrapError{
 				ErrorCode: 400,
-				Msg: "can't get user",
+				Msg:       "can't get user",
 				RootCause: errors.New("Bad Request"),
 			},
 			wantErr: true,
@@ -79,31 +79,42 @@ func TestGetUser(t *testing.T) {
 	}
 }
 
-
 func TestCreateUser(t *testing.T) {
 	userMock := new(mocks.UserService)
 	conn := NewUserController(userMock)
 
-	tests := []struct{
-		name string
-		status int
-		want string
+	tests := []struct {
+		name       string
+		status     int
+		want       string
 		userCreate *dto.UserCreateRequest
-		userID int64
-		err error
-		wantErr bool
+		userID     int64
+		err        error
+		wantErr    bool
 	}{
 		{
-			name: "create user success case",
+			name:   "create user success case",
 			status: 201,
-			want: `{"status":"ok","result":7}`,
+			want:   `{"status":"ok","result":7}`,
 			userCreate: &dto.UserCreateRequest{
 				UserName: "demouser name",
 				Password: "demouser password",
 			},
-			userID: 7,
-			err: nil,
+			userID:  7,
+			err:     nil,
 			wantErr: false,
+		},
+
+		{
+			name:   "create user error case",
+			status: 500,
+			want:   `{"status":"not ok","error":{"code":500,"message":"user creation failed","details":["Internal server error"]}}`,
+			err: &e.WrapError{
+				ErrorCode: 500,
+				Msg:       "user creation failed",
+				RootCause: errors.New("Internal server error"),
+			},
+			wantErr: true,
 		},
 	}
 
