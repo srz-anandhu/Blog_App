@@ -17,7 +17,9 @@ func TestGetUser(t *testing.T) {
 	updatedAt := time.Date(2024, time.July, 15, 0, 0, 0, 0, time.UTC)
 	deletedAt := time.Date(2024, time.July, 15, 0, 0, 0, 0, time.UTC)
 
+	// Creating an instance of user service mock
 	userMock := new(mocks.UserService)
+	// Passing mocked service layer(user) to NewUserController to get a connection
 	conn := NewUserController(userMock)
 
 	tests := []struct {
@@ -67,13 +69,16 @@ func TestGetUser(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			// creating a dummy request
 			req := httptest.NewRequest("GET", "/1", nil)
 			res := httptest.NewRecorder()
-
+			// calling "GetUser" function from user service
 			userMock.On("GetUser", req).Once().Return(test.user, test.err)
+			// calling "GetUser" function from user controller
 			conn.GetUser(res, req)
-
+			// checking want data with response
 			assert.Equal(t, test.want, res.Body.String())
+			// checking status code with response code
 			assert.Equal(t, test.status, res.Code)
 		})
 	}
@@ -130,6 +135,53 @@ func TestCreateUser(t *testing.T) {
 			// checking wanted data with response
 			assert.Equal(t, test.want, res.Body.String())
 			// checking status code with response code
+			assert.Equal(t, test.status, res.Code)
+		})
+	}
+}
+
+
+func TestDeleteUser(t *testing.T) {
+	userMock := new(mocks.UserService)
+	conn := NewUserController(userMock)
+
+	tests := []struct{
+		name string
+		status int
+		want string
+		err error
+		wantErr bool
+	}{
+		{
+			name: "delete user success case",
+			status: 200,
+			want: `{"status":"ok","result":"Deleted user successfully"}`,
+			err: nil,
+			wantErr: false,
+		},
+
+		{
+			name: "delete user error case",
+			status: 500,
+			want: `{"status":"not ok","error":{"code":500,"message":"user deletion failed","details":["Internal server error"]}}`,
+			err: &e.WrapError{
+				ErrorCode: 500,
+				Msg: "user deletion failed",
+				RootCause: errors.New("Internal server error"),
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			req := httptest.NewRequest("DELETE", "/4", nil)
+			res := httptest.NewRecorder()
+
+			userMock.On("DeleteUser", req).Once().Return(test.err)
+			conn.DeleteUser(res, req)
+
+			assert.Equal(t, test.want, res.Body.String())
 			assert.Equal(t, test.status, res.Code)
 		})
 	}
