@@ -186,3 +186,43 @@ func TestDeleteUser(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateUser(t *testing.T) {
+	userMock := new(mocks.UserService)
+	conn := NewUserController(userMock)
+
+	tests := []struct{
+		name string
+		status int
+		want string
+		userUpdate dto.UserUpdateRequest
+		err error
+		wantErr bool
+	}{
+		{
+			name: "update user success case",
+			status: 200,
+			want: `{"status":"ok","result":"user updated successfully"}`,
+			userUpdate: dto.UserUpdateRequest{
+				ID: 5,
+				Username: "updated user name",
+				Password: "somerandom password",
+			},
+			err: nil,
+			wantErr: false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			req := httptest.NewRequest("PUT", "/5", nil)
+			res := httptest.NewRecorder()
+
+			userMock.On("UpdateUser", req).Once().Return(test.err)
+			conn.UpdateUser(res, req)
+
+			assert.Equal(t, test.want, res.Body.String())
+			assert.Equal(t, test.status, res.Code)
+		})
+	}
+}
