@@ -140,33 +140,32 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
-
 func TestDeleteUser(t *testing.T) {
 	userMock := new(mocks.UserService)
 	conn := NewUserController(userMock)
 
-	tests := []struct{
-		name string
-		status int
-		want string
-		err error
+	tests := []struct {
+		name    string
+		status  int
+		want    string
+		err     error
 		wantErr bool
 	}{
 		{
-			name: "delete user success case",
-			status: 200,
-			want: `{"status":"ok","result":"Deleted user successfully"}`,
-			err: nil,
+			name:    "delete user success case",
+			status:  200,
+			want:    `{"status":"ok","result":"Deleted user successfully"}`,
+			err:     nil,
 			wantErr: false,
 		},
 
 		{
-			name: "delete user error case",
+			name:   "delete user error case",
 			status: 500,
-			want: `{"status":"not ok","error":{"code":500,"message":"user deletion failed","details":["Internal server error"]}}`,
+			want:   `{"status":"not ok","error":{"code":500,"message":"user deletion failed","details":["Internal server error"]}}`,
 			err: &e.WrapError{
 				ErrorCode: 500,
-				Msg: "user deletion failed",
+				Msg:       "user deletion failed",
 				RootCause: errors.New("Internal server error"),
 			},
 			wantErr: true,
@@ -191,25 +190,36 @@ func TestUpdateUser(t *testing.T) {
 	userMock := new(mocks.UserService)
 	conn := NewUserController(userMock)
 
-	tests := []struct{
-		name string
-		status int
-		want string
+	tests := []struct {
+		name       string
+		status     int
+		want       string
 		userUpdate dto.UserUpdateRequest
-		err error
-		wantErr bool
+		err        error
+		wantErr    bool
 	}{
 		{
-			name: "update user success case",
+			name:   "update user success case",
 			status: 200,
-			want: `{"status":"ok","result":"user updated successfully"}`,
+			want:   `{"status":"ok","result":"user updated successfully"}`,
 			userUpdate: dto.UserUpdateRequest{
-				ID: 5,
+				ID:       5,
 				Username: "updated user name",
 				Password: "somerandom password",
 			},
-			err: nil,
+			err:     nil,
 			wantErr: false,
+		},
+		{
+			name:   "update user error case",
+			status: 500,
+			want:   `{"status":"not ok","error":{"code":500,"message":"user updation failed","details":["Internal server error"]}}`,
+			err: &e.WrapError{
+				ErrorCode: 500,
+				Msg:       "user updation failed",
+				RootCause: errors.New("Internal server error"),
+			},
+			wantErr: true,
 		},
 	}
 
