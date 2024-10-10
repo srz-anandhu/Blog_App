@@ -77,3 +77,58 @@ func TestGetBlog(t *testing.T) {
 		})
 	}
 }
+
+func TestCreateBlog(t *testing.T) {
+	blogMock := new(mocks.BlogService)
+	conn := NewBlogController(blogMock)
+
+	tests := []struct{
+		name string
+		status int
+		want string
+		blogCreate *dto.BlogCreateRequest
+		blogID int64
+		err error
+		wantErr bool
+	}{
+		{
+			name: "create blog success case",
+			status: 201,
+			want: `{"status":"ok","result":7}`,
+			blogCreate: &dto.BlogCreateRequest{
+				Title: "blog title",
+				Content: "blog content",
+				AuthorID: 4,
+				Status: 1,
+				CreatedBy: 3,
+			},
+			blogID: 7,
+			err: nil,
+			wantErr: false,
+		},
+		{
+			name: "create blog error case",
+			status: 500,
+			want: `{"status":"not ok","error":{"code":500,"message":"blog creation failed","details":["Internal server error"]}}`,
+			err: &e.WrapError{
+				ErrorCode: 500,
+				Msg: "blog creation failed",
+				RootCause: errors.New("Internal server error"),
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			req := httptest.NewRequest("POST", "/create", nil)
+			res := httptest.NewRecorder()
+
+			blogMock.On("CreateBlog", req).Once().Return(test.blogID, test.err)
+			conn.CreateBlog(res, req)
+
+			assert.Equal(t, test.want, res.Body.String())
+			assert.Equal(t, test.status, res.Code)
+		})
+	}
+}
