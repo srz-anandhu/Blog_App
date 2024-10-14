@@ -4,6 +4,7 @@ import (
 	"blog/app/dto"
 	"blog/app/repo/mocks"
 	"context"
+	"errors"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -65,12 +66,27 @@ func TestGetAuthor(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name:     "Get author service layer error case",
+			reqParam: "2",
+			args:     &dto.AuthorRequest{ID: 2},
+			author:   nil,
+			getErr:   errors.New("query failed"),
+			// err: e.NewError(e.ErrResourceNotFound, "not found author with requested id", &e.WrapError{
+			// 	ErrorCode: 404001,
+			// 	Msg:       "not found author with requested id",
+			// 	RootCause: errors.New("query failed"),
+			// }),
+			err:     errors.New("query failed"),
+			want:    nil,
+			wantErr: true,
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			request := httptest.NewRequest("GET", "/", nil)
-			// response := httptest.NewRecorder()
+
 			chiCtx := chi.NewRouteContext()
 			chiCtx.URLParams.Add("id", test.reqParam)
 
@@ -79,7 +95,7 @@ func TestGetAuthor(t *testing.T) {
 			got, err := conn.GetAuthor(request)
 
 			if test.wantErr {
-				assert.Equal(t, test.err, err)
+				assert.Equal(t, test.err.Error(), err.Error())
 			}
 			assert.Equal(t, test.want, got)
 		})
