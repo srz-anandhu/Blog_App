@@ -243,24 +243,24 @@ func TestGetAllUsers(t *testing.T) {
 	userMock := new(mocks.UserService)
 	conn := NewUserController(userMock)
 
-	tests := []struct{
-		name string
-		status int
-		want string
-		users *[]dto.UserResponse
-		err error
+	tests := []struct {
+		name    string
+		status  int
+		want    string
+		users   *[]dto.UserResponse
+		err     error
 		wantErr bool
 	}{
 		{
-			name: "get all users success case",
+			name:   "get all users success case",
 			status: 200,
-			want: `{"status":"ok","result":[{"id":1,"username":"something@gmail.com","password":"some password","salt":"asdfg","is_deleted":false,"updated_at":"2024-07-15T00:00:00Z","created_at":"2024-07-15T00:00:00Z","deleted_at":"2024-07-15T00:00:00Z"}]}`,
+			want:   `{"status":"ok","result":[{"id":1,"username":"something@gmail.com","password":"some password","salt":"asdfg","is_deleted":false,"updated_at":"2024-07-15T00:00:00Z","created_at":"2024-07-15T00:00:00Z","deleted_at":"2024-07-15T00:00:00Z"},{"id":2,"username":"random@gmail.com","password":"randompassword","salt":"adafda","is_deleted":false,"updated_at":"2024-07-15T00:00:00Z","created_at":"2024-07-15T00:00:00Z","deleted_at":"2024-07-15T00:00:00Z"}]}`,
 			users: &[]dto.UserResponse{
 				{
-					ID: 1,
-					UserName: "something@gmail.com",
-					Password: "some password",
-					Salt: "asdfg",
+					ID:        1,
+					UserName:  "something@gmail.com",
+					Password:  "some password",
+					Salt:      "asdfg",
 					IsDeleted: false,
 					CreateUpdateResponse: dto.CreateUpdateResponse{
 						UpdatedAt: &updatedAt,
@@ -272,19 +272,35 @@ func TestGetAllUsers(t *testing.T) {
 						DeletedAt: &createdAt,
 						DeletedBy: nil,
 					},
-
+				},
+				{
+					ID:        2,
+					UserName:  "random@gmail.com",
+					Password:  "randompassword",
+					Salt:      "adafda",
+					IsDeleted: false,
+					CreateUpdateResponse: dto.CreateUpdateResponse{
+						UpdatedAt: &updatedAt,
+						UpdatedBy: nil,
+						CreatedAt: createdAt,
+						CreatedBy: nil,
+					},
+					DeleteInfoResponse: dto.DeleteInfoResponse{
+						DeletedAt: &createdAt,
+						DeletedBy: nil,
+					},
 				},
 			},
-			err: nil,
+			err:     nil,
 			wantErr: false,
 		},
 		{
-			name: "get all users error case",
+			name:   "get all users error case",
 			status: 500,
-			want: `{"status":"not ok","error":{"code":500,"message":"can't get all users","details":["Internal server error"]}}`,
+			want:   `{"status":"not ok","error":{"code":500,"message":"can't get all users","details":["Internal server error"]}}`,
 			err: &e.WrapError{
 				ErrorCode: 500,
-				Msg: "can't get all users",
+				Msg:       "can't get all users",
 				RootCause: errors.New("Internal server error"),
 			},
 		},
